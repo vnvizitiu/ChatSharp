@@ -40,12 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\IrcNoticeEventArgs.cs" />
+    <Compile Include="Events\ErronousNickEventArgs.cs" />
+    <Compile Include="Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Events\RawMessageEventArgs.cs" />
+    <Compile Include="Events\ServerMOTDEventArgs.cs" />
     <Compile Include="Events\SocketErrorEventArgs.cs" />
     <Compile Include="Handlers\MessageHandlers.cs" />
+    <Compile Include="Handlers\MOTDHandlers.cs" />
+    <Compile Include="IrcClient.Commands.cs" />
     <Compile Include="IrcClient.cs" />
     <Compile Include="IrcMessage.cs" />
+    <Compile Include="IrcProtocolException.cs" />
     <Compile Include="IrcUser.cs" />
+    <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

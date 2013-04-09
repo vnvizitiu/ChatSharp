@@ -8,7 +8,7 @@ using ChatSharp.Handlers;
 
 namespace ChatSharp
 {
-    public class IrcClient
+    public partial class IrcClient
     {
         static IrcClient()
         {
@@ -161,6 +161,41 @@ namespace ChatSharp
         protected internal virtual void OnRawMessageRecieved(RawMessageEventArgs e)
         {
             if (RawMessageRecieved != null) RawMessageRecieved(this, e);
+        }
+        public event EventHandler<IrcNoticeEventArgs> NoticeRecieved;
+        protected internal virtual void OnNoticeRecieved(IrcNoticeEventArgs e)
+        {
+            if (NoticeRecieved != null) NoticeRecieved(this, e);
+        }
+        public event EventHandler<ServerMOTDEventArgs> MOTDPartRecieved;
+        protected internal virtual void OnMOTDPartRecieved(ServerMOTDEventArgs e)
+        {
+            if (MOTDPartRecieved != null) MOTDPartRecieved(this, e);
+        }
+        public event EventHandler<ServerMOTDEventArgs> MOTDRecieved;
+        protected internal virtual void OnMOTDRecieved(ServerMOTDEventArgs e)
+        {
+            if (MOTDRecieved != null) MOTDRecieved(this, e);
+        }
+        public event EventHandler<PrivateMessageEventArgs> PrivateMessageRecieved;
+        protected internal virtual void OnPrivateMessageRecieved(PrivateMessageEventArgs e)
+        {
+            if (PrivateMessageRecieved != null) PrivateMessageRecieved(this, e);
+        }
+        public event EventHandler<PrivateMessageEventArgs> ChannelMessageRecieved;
+        protected internal virtual void OnChannelMessageRecieved(PrivateMessageEventArgs e)
+        {
+            if (ChannelMessageRecieved != null) ChannelMessageRecieved(this, e);
+        }
+        public event EventHandler<PrivateMessageEventArgs> UserMessageRecieved;
+        protected internal virtual void OnUserMessageRecieved(PrivateMessageEventArgs e)
+        {
+            if (UserMessageRecieved != null) UserMessageRecieved(this, e);
+        }
+        public event EventHandler<ErronousNickEventArgs> NickInUse;
+        protected internal virtual void OnNickInUse(ErronousNickEventArgs e)
+        {
+            if (NickInUse != null) NickInUse(this, e);
         }
     }
 }
