@@ -14,8 +14,7 @@ namespace ChatSharp.Handlers
 
         public static void HandlePing(IrcClient client, IrcMessage message)
         {
-            message.Command = "PONG";
-            client.SendMessage(message);
+            client.SendRawMessage("PONG :{0}", message.Payload);
         }
     }
 }
