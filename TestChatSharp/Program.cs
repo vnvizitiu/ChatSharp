@@ -15,6 +15,7 @@ namespace TestChatSharp
             client.NetworkError += (s, e) => Console.WriteLine("Error: " + e.SocketError);
             client.RawMessageRecieved += (s, e) => Console.WriteLine("<< {0}", e.Message);
             client.RawMessageSent += (s, e) => Console.WriteLine(">> {0}", e.Message);
+            client.UserMessageRecieved += (s, e) => client.SendMessage(e.PrivateMessage.Message, e.PrivateMessage.Medium);
             client.ConnectAsync();
             while (true) ;
         }

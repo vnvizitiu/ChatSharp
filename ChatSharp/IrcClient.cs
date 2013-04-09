@@ -132,7 +132,7 @@ namespace ChatSharp
             Socket.BeginSend(data, 0, data.Length, SocketFlags.None, MessageSent, message);
         }
 
-        public void SendMessage(IrcMessage message)
+        public void SendIrcMessage(IrcMessage message)
         {
             SendRawMessage(message.RawMessage);
         }

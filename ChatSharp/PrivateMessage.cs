@@ -14,7 +14,7 @@ namespace ChatSharp
 
             User = new IrcUser(message.Prefix);
             if (Medium.StartsWith("#"))
-                ChannelMessage = true;
+                IsChannelMessage = true;
             else
                 Medium = User.Nick;
         }
@@ -22,6 +22,6 @@ namespace ChatSharp
         public IrcUser User { get; set; }
         public string Message { get; set; }
         public string Medium { get; set; }
-        public bool ChannelMessage { get; set; }
+        public bool IsChannelMessage { get; set; }
     }
 }

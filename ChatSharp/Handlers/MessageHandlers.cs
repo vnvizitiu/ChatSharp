@@ -38,10 +38,11 @@ namespace ChatSharp.Handlers
         public static void HandlePrivmsg(IrcClient client, IrcMessage message)
         {
             var eventArgs = new PrivateMessageEventArgs(message);
-            if (eventArgs.PrivateMessage.ChannelMessage)
-            {
-                
-            }
+            client.OnPrivateMessageRecieved(eventArgs);
+            if (eventArgs.PrivateMessage.IsChannelMessage)
+                client.OnChannelMessageRecieved(eventArgs);
+            else
+                client.OnUserMessageRecieved(eventArgs);
         }
 
         public static void HandleErronousNick(IrcClient client, IrcMessage message)
