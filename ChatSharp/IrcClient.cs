@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using ChatSharp.Events;
 using System.Timers;
+using ChatSharp.Handlers;
 
 namespace ChatSharp
 {
@@ -12,7 +13,7 @@ namespace ChatSharp
         static IrcClient()
         {
             Handlers = new Dictionary<string, MessageHandler>();
-
+            MessageHandlers.RegisterDefaultHandlers();
         }
         
         public delegate void MessageHandler(IrcClient client, IrcMessage message);
@@ -88,7 +89,7 @@ namespace ChatSharp
         private void DataRecieved(IAsyncResult result)
         {
             SocketError error;
-            int length = Socket.EndReceive(result, out error);
+            int length = Socket.EndReceive(result, out error) + ReadBufferIndex;
             if (error != SocketError.Success)
             {
                 OnNetworkError(new SocketErrorEventArgs(error));
