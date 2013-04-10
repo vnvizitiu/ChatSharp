@@ -27,6 +27,14 @@ namespace ChatSharp.Handlers
         public static void HandleEndOfMOTD(IrcClient client, IrcMessage message)
         {
             client.OnMOTDRecieved(new ServerMOTDEventArgs(MOTD));
+            // Verify our identity
+            client.WhoIs(client.User.Nick, whois =>
+                {
+                    client.User.Nick = whois.User.Nick;
+                    client.User.User = whois.User.User;
+                    client.User.Hostname = whois.User.Hostname;
+                    client.User.RealName = whois.User.RealName;
+                });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatSharp.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,11 +44,19 @@ namespace ChatSharp
             SendRawMessage("JOIN {0}", name);
         }
 
-        internal void SetTopic(string name, string topic)
+        public void SetTopic(string name, string topic)
         {
             if (!Channels.Contains(name))
                 throw new InvalidOperationException("Client is not present in channel.");
             SendRawMessage("TOPIC {0} :{1}", name, topic);
+        }
+
+        public void WhoIs(string nick, Action<WhoIs> callback)
+        {
+            var whois = new WhoIs(nick);
+            whois.Callback = callback;
+            UserHandlers.PendingWhoIs.Add(whois);
+            SendRawMessage("WHOIS {0}", nick);
         }
     }
 }

@@ -25,6 +25,8 @@ namespace TestChatSharp
                         var list = channel.Users.Select(u => u.Nick).Aggregate((a, b) => a + "," + b);
                         client.SendMessage(list, e.PrivateMessage.User.Nick);
                     }
+                    else if (e.PrivateMessage.Message.StartsWith(".whois "))
+                        client.WhoIs(e.PrivateMessage.Message.Substring(7), null);
                 };
             client.ChannelMessageRecieved += (s, e) =>
                 {

@@ -7,6 +7,10 @@ namespace ChatSharp
 {
     public class IrcUser : IEquatable<IrcUser>
     {
+        internal IrcUser()
+        {
+        }
+
         public IrcUser(string host)
         {
             if (!host.Contains("@") && !host.Contains("!"))

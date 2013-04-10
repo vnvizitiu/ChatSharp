@@ -31,6 +31,14 @@ namespace ChatSharp.Handlers
             IrcClient.SetHandler("PART", ChannelHandlers.HandlePart);
             IrcClient.SetHandler("353", ChannelHandlers.HandleUserListPart);
             IrcClient.SetHandler("366", ChannelHandlers.HandleUserListEnd);
+
+            // User handlers
+            IrcClient.SetHandler("311", UserHandlers.HandleWhoIsUser);
+            IrcClient.SetHandler("312", UserHandlers.HandleWhoIsServer);
+            IrcClient.SetHandler("313", UserHandlers.HandleWhoIsOperator);
+            IrcClient.SetHandler("317", UserHandlers.HandleWhoIsIdle);
+            IrcClient.SetHandler("318", UserHandlers.HandleWhoIsEnd);
+            IrcClient.SetHandler("319", UserHandlers.HandleWhoIsChannels);
         }
 
         public static void HandlePing(IrcClient client, IrcMessage message)

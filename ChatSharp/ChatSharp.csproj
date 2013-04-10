@@ -54,6 +54,7 @@
     <Compile Include="Handlers\ChannelHandlers.cs" />
     <Compile Include="Handlers\MessageHandlers.cs" />
     <Compile Include="Handlers\MOTDHandlers.cs" />
+    <Compile Include="Handlers\UserHandlers.cs" />
     <Compile Include="IrcChannel.cs" />
     <Compile Include="IrcClient.Commands.cs" />
     <Compile Include="IrcClient.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserCollection.cs" />
+    <Compile Include="WhoIs.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
