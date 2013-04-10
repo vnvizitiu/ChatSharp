@@ -7,12 +7,11 @@ namespace ChatSharp
 {
     public class WhoIs
     {
-        internal WhoIs(string nick)
+        internal WhoIs()
         {
             User = new IrcUser();
             SecondsIdle = -1;
             Channels = new string[0];
-            Nick = nick;
         }
 
         public IrcUser User { get; set; }
@@ -21,8 +20,5 @@ namespace ChatSharp
         public int SecondsIdle { get; set; }
         public string Server { get; set; }
         public string ServerInfo { get; set; }
-
-        internal Action<WhoIs> Callback { get; set; }
-        internal string Nick { get; set; }
     }
 }

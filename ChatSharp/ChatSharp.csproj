@@ -65,6 +65,7 @@
     <Compile Include="MaskCollection.cs" />
     <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestOperation.cs" />
     <Compile Include="UserCollection.cs" />
     <Compile Include="WhoIs.cs" />
   </ItemGroup>

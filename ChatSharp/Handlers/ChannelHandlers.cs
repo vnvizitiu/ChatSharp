@@ -59,7 +59,7 @@ namespace ChatSharp.Handlers
             var channel = client.Channels[message.Parameters[1]];
             client.OnChannelListRecieved(new ChannelEventArgs(channel));
             if (client.Settings.ModeOnJoin)
-                client.GetMode(channel.Name, null);
+                client.GetMode(channel.Name, c => Console.WriteLine(c.Mode));
         }
     }
 }

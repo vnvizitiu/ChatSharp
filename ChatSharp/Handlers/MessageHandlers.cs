@@ -166,6 +166,11 @@ namespace ChatSharp.Handlers
                             channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
                     }
                 }
+                if (message.Command == "324")
+                {
+                    var operation = RequestOperation.DequeueOperation("MODE " + channel.Name);
+                    operation.Callback(operation);
+                }
             }
             else
             {

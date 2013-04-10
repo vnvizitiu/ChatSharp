@@ -53,15 +53,23 @@ namespace ChatSharp
 
         public void WhoIs(string nick, Action<WhoIs> callback)
         {
-            var whois = new WhoIs(nick);
-            whois.Callback = callback;
-            UserHandlers.PendingWhoIs.Add(whois);
+            var whois = new WhoIs();
+            RequestOperation.QueueOperation("WHOIS " + nick, new RequestOperation(whois, ro =>
+                {
+                    if (callback != null)
+                        callback((WhoIs)ro.State);
+                }));
             SendRawMessage("WHOIS {0}", nick);
         }
 
         public void GetMode(string channel, Action<IrcChannel> callback)
         {
-            // TODO: callback
+            RequestOperation.QueueOperation("MODE " + channel, new RequestOperation(channel, ro =>
+                {
+                    var c = Channels[(string)ro.State];
+                    if (callback != null)
+                        callback(c);
+                }));
             SendRawMessage("MODE {0}", channel);
         }
     }
