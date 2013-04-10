@@ -146,7 +146,10 @@ namespace ChatSharp.Handlers
                     else
                     {
                         if (add)
-                            channel.Mode += c.ToString();
+                        {
+                            if (!channel.Mode.Contains(c))
+                                channel.Mode += c.ToString();
+                        }
                         else
                             channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
                     }
@@ -155,12 +158,15 @@ namespace ChatSharp.Handlers
             else
             {
                 // TODO: Handle user modes other than ourselves?
-                if (add)
-                    client.User.Mode += change;
-                else
+                foreach (char c in change)
                 {
-                    foreach (char c in change)
-                        client.User.Mode.Replace(c.ToString(), string.Empty);
+                    if (add)
+                    {
+                        if (!client.User.Mode.Contains(c))
+                            client.User.Mode += c;
+                    }
+                    else
+                        client.User.Mode = client.User.Mode.Replace(c.ToString(), string.Empty);
                 }
             }
         }
