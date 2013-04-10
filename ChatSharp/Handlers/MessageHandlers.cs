@@ -73,8 +73,18 @@ namespace ChatSharp.Handlers
 
         public static void HandleMode(IrcClient client, IrcMessage message)
         {
-            var target = message.Parameters[0];
-            var mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
+            string target, mode;
+            if (message.Command == "MODE")
+            {
+                target = message.Parameters[0];
+                mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
+            }
+            else
+            {
+                target = message.Parameters[1];
+                mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
+                mode = mode.Substring(mode.IndexOf(' ') + 1);
+            }
 
             var eventArgs = new ModeChangeEventArgs(target, new IrcUser(message.Prefix), mode);
             client.OnModeChanged(eventArgs);
@@ -145,6 +155,8 @@ namespace ChatSharp.Handlers
                     }
                     else
                     {
+                        if (channel.Mode == null)
+                            channel.Mode = string.Empty;
                         if (add)
                         {
                             if (!channel.Mode.Contains(c))

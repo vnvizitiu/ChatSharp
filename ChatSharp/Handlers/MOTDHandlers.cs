@@ -28,13 +28,16 @@ namespace ChatSharp.Handlers
         {
             client.OnMOTDRecieved(new ServerMOTDEventArgs(MOTD));
             // Verify our identity
-            client.WhoIs(client.User.Nick, whois =>
-                {
-                    client.User.Nick = whois.User.Nick;
-                    client.User.User = whois.User.User;
-                    client.User.Hostname = whois.User.Hostname;
-                    client.User.RealName = whois.User.RealName;
-                });
+            if (client.Settings.WhoIsOnConnect)
+            {
+                client.WhoIs(client.User.Nick, whois =>
+                    {
+                        client.User.Nick = whois.User.Nick;
+                        client.User.User = whois.User.User;
+                        client.User.Hostname = whois.User.Hostname;
+                        client.User.RealName = whois.User.RealName;
+                    });
+            }
         }
     }
 }

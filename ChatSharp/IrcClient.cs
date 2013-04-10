@@ -55,6 +55,7 @@ namespace ChatSharp
         public Encoding Encoding { get; set; }
         public IrcUser User { get; set; }
         public ChannelCollection Channels { get; private set; }
+        public ClientSettings Settings { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user)
         {
@@ -65,6 +66,7 @@ namespace ChatSharp
             ServerAddress = serverAddress;
             Encoding = Encoding.UTF8;
             Channels = new ChannelCollection(this);
+            Settings = new ClientSettings();
         }
 
         public void ConnectAsync()

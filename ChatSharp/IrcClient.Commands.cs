@@ -37,18 +37,18 @@ namespace ChatSharp
             Channels.Remove(Channels[channel]);
         }
 
-        public void JoinChannel(string name)
+        public void JoinChannel(string channel)
         {
-            if (Channels.Contains(name))
+            if (Channels.Contains(channel))
                 throw new InvalidOperationException("Client is not already present in channel.");
-            SendRawMessage("JOIN {0}", name);
+            SendRawMessage("JOIN {0}", channel);
         }
 
-        public void SetTopic(string name, string topic)
+        public void SetTopic(string channel, string topic)
         {
-            if (!Channels.Contains(name))
+            if (!Channels.Contains(channel))
                 throw new InvalidOperationException("Client is not present in channel.");
-            SendRawMessage("TOPIC {0} :{1}", name, topic);
+            SendRawMessage("TOPIC {0} :{1}", channel, topic);
         }
 
         public void WhoIs(string nick, Action<WhoIs> callback)
@@ -57,6 +57,12 @@ namespace ChatSharp
             whois.Callback = callback;
             UserHandlers.PendingWhoIs.Add(whois);
             SendRawMessage("WHOIS {0}", nick);
+        }
+
+        public void GetMode(string channel, Action<IrcChannel> callback)
+        {
+            // TODO: callback
+            SendRawMessage("MODE {0}", channel);
         }
     }
 }

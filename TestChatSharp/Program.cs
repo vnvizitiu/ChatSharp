@@ -11,7 +11,7 @@ namespace TestChatSharp
     {
         static void Main(string[] args)
         {
-            var client = new IrcClient("irc.freenode.net", new IrcUser("SirCmpwnBot", "SirCmpwnBot"));
+            var client = new IrcClient("irc.freenode.net", new IrcUser("ChatSharp", "ChatSharp"));
             client.NetworkError += (s, e) => Console.WriteLine("Error: " + e.SocketError);
             client.RawMessageRecieved += (s, e) => Console.WriteLine("<< {0}", e.Message);
             client.RawMessageSent += (s, e) => Console.WriteLine(">> {0}", e.Message);
@@ -27,6 +27,8 @@ namespace TestChatSharp
                     }
                     else if (e.PrivateMessage.Message.StartsWith(".whois "))
                         client.WhoIs(e.PrivateMessage.Message.Substring(7), null);
+                    else if (e.PrivateMessage.Message.StartsWith(".raw "))
+                        client.SendRawMessage(e.PrivateMessage.Message.Substring(5));
                 };
             client.ChannelMessageRecieved += (s, e) =>
                 {
