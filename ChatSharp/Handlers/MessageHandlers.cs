@@ -14,6 +14,8 @@ namespace ChatSharp.Handlers
             IrcClient.SetHandler("PING", HandlePing);
             IrcClient.SetHandler("NOTICE", HandleNotice);
             IrcClient.SetHandler("PRIVMSG", HandlePrivmsg);
+            IrcClient.SetHandler("MODE", HandleMode);
+            IrcClient.SetHandler("324", HandleMode);
             IrcClient.SetHandler("431", HandleErronousNick);
             IrcClient.SetHandler("432", HandleErronousNick);
             IrcClient.SetHandler("433", HandleErronousNick);
@@ -23,6 +25,12 @@ namespace ChatSharp.Handlers
             IrcClient.SetHandler("375", MOTDHandlers.HandleMOTDStart);
             IrcClient.SetHandler("372", MOTDHandlers.HandleMOTD);
             IrcClient.SetHandler("376", MOTDHandlers.HandleEndOfMOTD);
+
+            // Channel handlers
+            IrcClient.SetHandler("JOIN", ChannelHandlers.HandleJoin);
+            IrcClient.SetHandler("PART", ChannelHandlers.HandlePart);
+            IrcClient.SetHandler("353", ChannelHandlers.HandleUserListPart);
+            IrcClient.SetHandler("366", ChannelHandlers.HandleUserListEnd);
         }
 
         public static void HandlePing(IrcClient client, IrcMessage message)
@@ -53,6 +61,100 @@ namespace ChatSharp.Handlers
             // else ... TODO
             if (!eventArgs.DoNotHandle)
                 client.Nick(eventArgs.NewNick);
+        }
+
+        public static void HandleMode(IrcClient client, IrcMessage message)
+        {
+            var target = message.Parameters[0];
+            var mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
+
+            var eventArgs = new ModeChangeEventArgs(target, new IrcUser(message.Prefix), mode);
+            client.OnModeChanged(eventArgs);
+            // Handle change
+            var change = mode;
+            var parameters = new string[0];
+            if (change.Contains(' '))
+            {
+                parameters = change.Substring(change.IndexOf(' ') + 1).Split(' ');
+                change = change.Remove(change.IndexOf(' '));
+            }
+            bool add = change[0] == '+';
+            change = change.Substring(1);
+            if (target.StartsWith("#"))
+            {
+                var channel = client.Channels[target];
+                int i = 0;
+                foreach (char c in change)
+                {
+                    if (c == 'o')
+                    {
+                        var user = parameters[i++];
+                        if (add)
+                            channel.Opped.Add(channel.Users[user]);
+                        else
+                            channel.Opped.Remove(user);
+                    }
+                    else if (c == 'v')
+                    {
+                        var user = parameters[i++];
+                        if (add)
+                            channel.Voiced.Add(channel.Users[user]);
+                        else
+                            channel.Voiced.Remove(user);
+                    }
+                    else if (c == 'b')
+                    {
+                        var mask = parameters[i++];
+                        if (add)
+                            channel.Bans.Add(mask);
+                        else
+                        {
+                            if (channel.Bans.Contains(mask))
+                                channel.Bans.Remove(mask);
+                        }
+                    }
+                    else if (c == 'e')
+                    {
+                        var mask = parameters[i++];
+                        if (add)
+                            channel.Exceptions.Add(mask);
+                        else
+                        {
+                            if (channel.Exceptions.Contains(mask))
+                                channel.Exceptions.Remove(mask);
+                        }
+                    }
+                    else if (c == 'I')
+                    {
+                        var mask = parameters[i++];
+                        if (add)
+                            channel.Invites.Add(mask);
+                        else
+                        {
+                            if (channel.Invites.Contains(mask))
+                                channel.Invites.Remove(mask);
+                        }
+                    }
+                    else
+                    {
+                        if (add)
+                            channel.Mode += c.ToString();
+                        else
+                            channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
+                    }
+                }
+            }
+            else
+            {
+                // TODO: Handle user modes other than ourselves?
+                if (add)
+                    client.User.Mode += change;
+                else
+                {
+                    foreach (char c in change)
+                        client.User.Mode.Replace(c.ToString(), string.Empty);
+                }
+            }
         }
     }
 }

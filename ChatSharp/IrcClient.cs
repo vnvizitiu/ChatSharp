@@ -54,6 +54,7 @@ namespace ChatSharp
         public Socket Socket { get; set; }
         public Encoding Encoding { get; set; }
         public IrcUser User { get; set; }
+        public ChannelCollection Channels { get; private set; }
 
         public IrcClient(string serverAddress, IrcUser user)
         {
@@ -63,6 +64,7 @@ namespace ChatSharp
             User = user;
             ServerAddress = serverAddress;
             Encoding = Encoding.UTF8;
+            Channels = new ChannelCollection(this);
         }
 
         public void ConnectAsync()
@@ -196,6 +198,26 @@ namespace ChatSharp
         protected internal virtual void OnNickInUse(ErronousNickEventArgs e)
         {
             if (NickInUse != null) NickInUse(this, e);
+        }
+        public event EventHandler<ModeChangeEventArgs> ModeChanged;
+        protected internal virtual void OnModeChanged(ModeChangeEventArgs e)
+        {
+            if (ModeChanged != null) ModeChanged(this, e);
+        }
+        public event EventHandler<ChannelUserEventArgs> UserJoinedChannel;
+        protected internal virtual void OnUserJoinedChannel(ChannelUserEventArgs e)
+        {
+            if (UserJoinedChannel != null) UserJoinedChannel(this, e);
+        }
+        public event EventHandler<ChannelUserEventArgs> UserPartedChannel;
+        protected internal virtual void OnUserPartedChannel(ChannelUserEventArgs e)
+        {
+            if (UserPartedChannel != null) UserPartedChannel(this, e);
+        }
+        public event EventHandler<ChannelEventArgs> ChannelListRecieved;
+        protected internal virtual void OnChannelListRecieved(ChannelEventArgs e)
+        {
+            if (ChannelListRecieved != null) ChannelListRecieved(this, e);
         }
     }
 }

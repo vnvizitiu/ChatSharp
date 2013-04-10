@@ -26,7 +26,8 @@ namespace ChatSharp
             var parameters = new List<string>();
             parameters.AddRange(matches.Groups["middle"].Value
                 .Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-            parameters.Add(matches.Groups["trailing"].Value);
+            if (!string.IsNullOrEmpty(matches.Groups["trailing"].Value))
+                parameters.Add(matches.Groups["trailing"].Value);
 
             Parameters = parameters.ToArray();
         }

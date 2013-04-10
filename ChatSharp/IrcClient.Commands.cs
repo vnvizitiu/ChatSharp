@@ -19,5 +19,35 @@ namespace ChatSharp
             string to = string.Join(",", destinations);
             SendRawMessage("PRIVMSG {0} :{1}", to, message);
         }
+
+        public void PartChannel(string channel)
+        {
+            if (!Channels.Contains(channel))
+                throw new InvalidOperationException("Client is not present in channel.");
+            SendRawMessage("PART {0}", channel);
+            Channels.Remove(Channels[channel]);
+        }
+
+        public void PartChannel(string channel, string reason)
+        {
+            if (!Channels.Contains(channel))
+                throw new InvalidOperationException("Client is not present in channel.");
+            SendRawMessage("PART {0} :{1}", channel, reason);
+            Channels.Remove(Channels[channel]);
+        }
+
+        public void JoinChannel(string name)
+        {
+            if (Channels.Contains(name))
+                throw new InvalidOperationException("Client is not already present in channel.");
+            SendRawMessage("JOIN {0}", name);
+        }
+
+        internal void SetTopic(string name, string topic)
+        {
+            if (!Channels.Contains(name))
+                throw new InvalidOperationException("Client is not present in channel.");
+            SendRawMessage("TOPIC {0} :{1}", name, topic);
+        }
     }
 }
