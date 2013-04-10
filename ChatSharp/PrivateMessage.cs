@@ -9,19 +9,19 @@ namespace ChatSharp
     {
         public PrivateMessage(IrcMessage message)
         {
-            Medium = message.Payload.Remove(message.Payload.IndexOf(' '));
+            Source = message.Payload.Remove(message.Payload.IndexOf(' '));
             Message = message.Payload.Substring(message.Payload.IndexOf(':') + 1);
 
             User = new IrcUser(message.Prefix);
-            if (Medium.StartsWith("#"))
+            if (Source.StartsWith("#"))
                 IsChannelMessage = true;
             else
-                Medium = User.Nick;
+                Source = User.Nick;
         }
 
         public IrcUser User { get; set; }
         public string Message { get; set; }
-        public string Medium { get; set; }
+        public string Source { get; set; }
         public bool IsChannelMessage { get; set; }
     }
 }
