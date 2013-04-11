@@ -51,6 +51,11 @@ namespace ChatSharp
             SendRawMessage("TOPIC {0} :{1}", channel, topic);
         }
 
+        public void WhoIs(string nick)
+        {
+            WhoIs(nick, null);
+        }
+
         public void WhoIs(string nick, Action<WhoIs> callback)
         {
             var whois = new WhoIs();
@@ -62,6 +67,11 @@ namespace ChatSharp
             SendRawMessage("WHOIS {0}", nick);
         }
 
+        public void GetMode(string channel)
+        {
+            GetMode(channel, null);
+        }
+
         public void GetMode(string channel, Action<IrcChannel> callback)
         {
             RequestOperation.QueueOperation("MODE " + channel, new RequestOperation(channel, ro =>
@@ -71,6 +81,11 @@ namespace ChatSharp
                         callback(c);
                 }));
             SendRawMessage("MODE {0}", channel);
+        }
+
+        public void GetBanList(string channel)
+        {
+            GetBanList(channel);
         }
 
         public void GetBanList(string channel, Action<Mask[]> callback)
@@ -90,6 +105,11 @@ namespace ChatSharp
             SendRawMessage("MODE {0} b", channel);
         }
 
+        public void GetExceptionList(string channel)
+        {
+            GetExceptionList(channel);
+        }
+
         public void GetExceptionList(string channel, Action<Mask[]> callback)
         {
             RequestOperation.QueueOperation("ELIST " + channel, new RequestOperation(new List<Mask>(), ro =>
@@ -107,6 +127,11 @@ namespace ChatSharp
             SendRawMessage("MODE {0} e", channel);
         }
 
+        public void GetInviteList(string channel)
+        {
+            GetInviteList(channel, null);
+        }
+
         public void GetInviteList(string channel, Action<Mask[]> callback)
         {
             RequestOperation.QueueOperation("ILIST " + channel, new RequestOperation(new List<Mask>(), ro =>
@@ -122,6 +147,11 @@ namespace ChatSharp
                     callback(invites.ToArray());
             }));
             SendRawMessage("MODE {0} I", channel);
+        }
+
+        public void GetQuietList(string channel)
+        {
+            GetQuietList(channel, null);
         }
 
         public void GetQuietList(string channel, Action<Mask[]> callback)
