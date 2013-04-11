@@ -26,7 +26,7 @@ namespace ChatSharp
         public string Name { get; internal set; }
         public string Mode { get; internal set; }
         public UserCollection Users { get; private set; }
-        public UserCollection Opped { get; private set; }
+        public UserCollection Operators { get; private set; }
         public UserCollection Voiced { get; private set; }
         public MaskCollection Bans { get; private set; }
         public MaskCollection Exceptions { get; private set; }
@@ -37,7 +37,7 @@ namespace ChatSharp
         {
             Client = client;
             Users = new UserCollection();
-            Opped = new UserCollection();
+            Operators = new UserCollection();
             Voiced = new UserCollection();
             Bans = new MaskCollection();
             Exceptions = new MaskCollection();
@@ -90,6 +90,49 @@ namespace ChatSharp
                 if (callback != null)
                     callback(this);
             });
+        }
+
+        public void SendMessage(string message)
+        {
+            Client.SendMessage(message, Name);
+        }
+
+        public void Ban(string mask)
+        {
+            Client.SendRawMessage("MODE {0} +b {1}", Name, mask);
+        }
+
+        public void Ban(IrcUser user)
+        {
+            Client.SendRawMessage("MODE {0} +b *!*@{1}", Name, user.Hostname);
+        }
+
+        public void Unban(IrcUser user)
+        {
+            GetBanList(c =>
+            {
+                if (Bans.ContainsMatch(user))
+                    Client.SendRawMessage("MODE {0} -b {1}", Name, Quiets.GetMatch(user));
+            });
+        }
+
+        public void Quiet(string mask)
+        {
+            Client.SendRawMessage("MODE {0} +q {1}", Name, mask);
+        }
+
+        public void Quiet(IrcUser user)
+        {
+            Client.SendRawMessage("MODE {0} +q *!*@{1}", Name, user.Hostname);
+        }
+
+        public void Unquiet(IrcUser user)
+        {
+            GetQuietList(c =>
+                {
+                    if (Quiets.ContainsMatch(user))
+                        Client.SendRawMessage("MODE {0} -q {1}", Name, Quiets.GetMatch(user));
+                });
         }
     }
 }

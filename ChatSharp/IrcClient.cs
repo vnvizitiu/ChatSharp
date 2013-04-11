@@ -232,5 +232,10 @@ namespace ChatSharp
         {
             if (ChannelListRecieved != null) ChannelListRecieved(this, e);
         }
+        public event EventHandler<EventArgs> ConnectionComplete;
+        protected internal virtual void OnConnectionComplete(EventArgs e)
+        {
+            if (ConnectionComplete != null) ConnectionComplete(this, e);
+        }
     }
 }

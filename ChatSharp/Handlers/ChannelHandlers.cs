@@ -43,7 +43,7 @@ namespace ChatSharp.Handlers
                 if (user.StartsWith("@"))
                 {
                     user = user.Substring(1);
-                    channel.Opped.Add(new IrcUser(user));
+                    channel.Operators.Add(new IrcUser(user));
                 }
                 if (user.StartsWith("+"))
                 {

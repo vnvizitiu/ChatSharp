@@ -118,9 +118,9 @@ namespace ChatSharp.Handlers
                     {
                         var user = parameters[i++];
                         if (add)
-                            channel.Opped.Add(channel.Users[user]);
+                            channel.Operators.Add(channel.Users[user]);
                         else
-                            channel.Opped.Remove(user);
+                            channel.Operators.Remove(user);
                     }
                     else if (c == 'v')
                     {

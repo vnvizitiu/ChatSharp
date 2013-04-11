@@ -27,6 +27,7 @@ namespace ChatSharp.Handlers
         public static void HandleEndOfMOTD(IrcClient client, IrcMessage message)
         {
             client.OnMOTDRecieved(new ServerMOTDEventArgs(MOTD));
+            client.OnConnectionComplete(new EventArgs());
             // Verify our identity
             if (client.Settings.WhoIsOnConnect)
             {
