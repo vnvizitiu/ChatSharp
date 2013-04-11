@@ -53,6 +53,7 @@
     <Compile Include="Events\ServerMOTDEventArgs.cs" />
     <Compile Include="Events\SocketErrorEventArgs.cs" />
     <Compile Include="Handlers\ChannelHandlers.cs" />
+    <Compile Include="Handlers\ListingHandlers.cs" />
     <Compile Include="Handlers\MessageHandlers.cs" />
     <Compile Include="Handlers\MOTDHandlers.cs" />
     <Compile Include="Handlers\UserHandlers.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="IrcMessage.cs" />
     <Compile Include="IrcProtocolException.cs" />
     <Compile Include="IrcUser.cs" />
+    <Compile Include="Mask.cs" />
     <Compile Include="MaskCollection.cs" />
     <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -113,5 +113,10 @@ namespace ChatSharp
         {
             return Hostmask.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return Hostmask;
+        }
     }
 }

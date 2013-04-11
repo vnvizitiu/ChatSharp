@@ -6,31 +6,36 @@ using System.Text;
 
 namespace ChatSharp
 {
-    public class MaskCollection : IEnumerable<string>
+    public class MaskCollection : IEnumerable<Mask>
     {
         internal MaskCollection()
         {
-            Masks = new List<string>();
+            Masks = new List<Mask>();
         }
 
-        private List<string> Masks { get; set; }
+        private List<Mask> Masks { get; set; }
 
-        internal void Add(string mask)
+        internal void Add(Mask mask)
         {
             Masks.Add(mask);
         }
 
-        internal void Remove(string mask)
+        internal void Remove(Mask mask)
         {
             Masks.Remove(mask);
         }
 
-        public bool Contains(string mask)
+        public bool Contains(Mask mask)
         {
             return Masks.Contains(mask);
         }
 
-        public string this[int index]
+        public bool ContainsMask(Mask mask)
+        {
+            return Masks.Any(m => m.Value == mask.Value);
+        }
+
+        public Mask this[int index]
         {
             get
             {
@@ -40,18 +45,18 @@ namespace ChatSharp
 
         public bool ContainsMatch(IrcUser user)
         {
-            return Masks.Any(m => user.Match(m));
+            return Masks.Any(m => user.Match(m.Value));
         }
 
-        public string GetMatch(IrcUser user)
+        public Mask GetMatch(IrcUser user)
         {
-            var match = Masks.FirstOrDefault(m => user.Match(m));
+            var match = Masks.FirstOrDefault(m => user.Match(m.Value));
             if (match == null)
                 throw new KeyNotFoundException("No mask matches the specified user.");
             return match;
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<Mask> GetEnumerator()
         {
             return Masks.GetEnumerator();
         }

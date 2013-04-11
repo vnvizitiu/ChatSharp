@@ -72,5 +72,73 @@ namespace ChatSharp
                 }));
             SendRawMessage("MODE {0}", channel);
         }
+
+        public void GetBanList(string channel, Action<Mask[]> callback)
+        {
+            RequestOperation.QueueOperation("BLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+                {
+                    var bans = ro.State as List<Mask>;
+                    if (Channels.Contains(channel))
+                    {
+                        // Update channel list
+                        foreach (var ban in bans)
+                            Channels[channel].Bans.Add(ban);
+                    }
+                    if (callback != null)
+                        callback(bans.ToArray());
+                }));
+            SendRawMessage("MODE {0} b", channel);
+        }
+
+        public void GetExceptionList(string channel, Action<Mask[]> callback)
+        {
+            RequestOperation.QueueOperation("ELIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            {
+                var exceptions = ro.State as List<Mask>;
+                if (Channels.Contains(channel))
+                {
+                    // Update channel list
+                    foreach (var ex in exceptions)
+                        Channels[channel].Exceptions.Add(ex);
+                }
+                if (callback != null)
+                    callback(exceptions.ToArray());
+            }));
+            SendRawMessage("MODE {0} e", channel);
+        }
+
+        public void GetInviteList(string channel, Action<Mask[]> callback)
+        {
+            RequestOperation.QueueOperation("ILIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            {
+                var invites = ro.State as List<Mask>;
+                if (Channels.Contains(channel))
+                {
+                    // Update channel list
+                    foreach (var i in invites)
+                        Channels[channel].Invites.Add(i);
+                }
+                if (callback != null)
+                    callback(invites.ToArray());
+            }));
+            SendRawMessage("MODE {0} I", channel);
+        }
+
+        public void GetQuietList(string channel, Action<Mask[]> callback)
+        {
+            RequestOperation.QueueOperation("QLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            {
+                var quiets = ro.State as List<Mask>;
+                if (Channels.Contains(channel))
+                {
+                    // Update channel list
+                    foreach (var q in quiets)
+                        Channels[channel].Quiets.Add(q);
+                }
+                if (callback != null)
+                    callback(quiets.ToArray());
+            }));
+            SendRawMessage("MODE {0} q", channel);
+        }
     }
 }

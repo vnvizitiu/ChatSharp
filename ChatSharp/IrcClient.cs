@@ -20,8 +20,19 @@ namespace ChatSharp
         internal static Dictionary<string, MessageHandler> Handlers { get; set; }
         public static void SetHandler(string message, MessageHandler handler)
         {
+#if DEBUG
+            // This is the default behavior if 3rd parties want to handle certain messages themselves
+            // However, if it happens from our own code, we probably did something wrong
+            if (Handlers.ContainsKey(message.ToUpper()))
+                Console.WriteLine("Warning: {0} handler has been overwritten", message);
+#endif
             message = message.ToUpper();
             Handlers[message] = handler;
+        }
+
+        internal static DateTime DateTimeFromIrcTime(int time)
+        {
+            return new DateTime(1970, 1, 1).AddSeconds(time);
         }
 
         private const int ReadBufferLength = 1024;

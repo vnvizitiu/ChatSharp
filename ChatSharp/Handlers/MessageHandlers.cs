@@ -39,6 +39,16 @@ namespace ChatSharp.Handlers
             IrcClient.SetHandler("317", UserHandlers.HandleWhoIsIdle);
             IrcClient.SetHandler("318", UserHandlers.HandleWhoIsEnd);
             IrcClient.SetHandler("319", UserHandlers.HandleWhoIsChannels);
+
+            // Listing handlers
+            IrcClient.SetHandler("367", ListingHandlers.HandleBanListPart);
+            IrcClient.SetHandler("368", ListingHandlers.HandleBanListEnd);
+            IrcClient.SetHandler("348", ListingHandlers.HandleExceptionListPart);
+            IrcClient.SetHandler("349", ListingHandlers.HandleExceptionListEnd);
+            IrcClient.SetHandler("346", ListingHandlers.HandleInviteListPart);
+            IrcClient.SetHandler("347", ListingHandlers.HandleInviteListEnd);
+            IrcClient.SetHandler("728", ListingHandlers.HandleQuietListPart);
+            IrcClient.SetHandler("729", ListingHandlers.HandleQuietListEnd);
         }
 
         public static void HandlePing(IrcClient client, IrcMessage message)
@@ -122,34 +132,45 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'b')
                     {
-                        var mask = parameters[i++];
+                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Bans.Add(mask);
                         else
                         {
-                            if (channel.Bans.Contains(mask))
+                            if (channel.Bans.ContainsMask(mask))
                                 channel.Bans.Remove(mask);
                         }
                     }
                     else if (c == 'e')
                     {
-                        var mask = parameters[i++];
+                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Exceptions.Add(mask);
                         else
                         {
-                            if (channel.Exceptions.Contains(mask))
+                            if (channel.Exceptions.ContainsMask(mask))
                                 channel.Exceptions.Remove(mask);
+                        }
+                    }
+                    else if (c == 'q')
+                    {
+                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
+                        if (add)
+                            channel.Quiets.Add(mask);
+                        else
+                        {
+                            if (channel.Quiets.ContainsMask(mask))
+                                channel.Quiets.Remove(mask);
                         }
                     }
                     else if (c == 'I')
                     {
-                        var mask = parameters[i++];
+                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Invites.Add(mask);
                         else
                         {
-                            if (channel.Invites.Contains(mask))
+                            if (channel.Invites.ContainsMask(mask))
                                 channel.Invites.Remove(mask);
                         }
                     }

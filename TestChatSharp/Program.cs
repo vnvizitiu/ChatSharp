@@ -29,6 +29,24 @@ namespace TestChatSharp
                         client.WhoIs(e.PrivateMessage.Message.Substring(7), null);
                     else if (e.PrivateMessage.Message.StartsWith(".raw "))
                         client.SendRawMessage(e.PrivateMessage.Message.Substring(5));
+                    else if (e.PrivateMessage.Message.StartsWith(".bans "))
+                    {
+                        client.GetBanList(e.PrivateMessage.Message.Substring(6), bans =>
+                            {
+                                client.SendMessage(string.Join(",", bans.Select(b => 
+                                    string.Format("{0} by {1} at {2}", b.Value, b.Creator, b.CreationTime)
+                                    ).ToArray()), e.PrivateMessage.User.Nick);
+                            });
+                    }
+                    else if (e.PrivateMessage.Message.StartsWith(".exceptions "))
+                    {
+                        client.GetExceptionList(e.PrivateMessage.Message.Substring(12), exceptions =>
+                        {
+                            client.SendMessage(string.Join(",", exceptions.Select(ex =>
+                                    string.Format("{0} by {1} at {2}", ex.Value, ex.Creator, ex.CreationTime)
+                                    ).ToArray()), e.PrivateMessage.User.Nick);
+                        });
+                    }
                 };
             client.ChannelMessageRecieved += (s, e) =>
                 {
