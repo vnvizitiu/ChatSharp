@@ -9,8 +9,8 @@ namespace ChatSharp
     {
         public PrivateMessage(IrcMessage message)
         {
-            Source = message.Payload.Remove(message.Payload.IndexOf(' '));
-            Message = message.Payload.Substring(message.Payload.IndexOf(':') + 1);
+            Source = message.Parameters[0];
+            Message = message.Parameters[1];
 
             User = new IrcUser(message.Prefix);
             if (Source.StartsWith("#"))

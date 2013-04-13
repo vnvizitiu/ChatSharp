@@ -8,31 +8,51 @@ namespace ChatSharp
 {
     public class IrcMessage
     {
-        /// <summary>
-        /// Parses a raw message string received from the server. See RFC 1459, 2.3.1 for details on raw message syntax.
-        /// </summary>
-        /// <param name="RawMessage"></param>
-        public IrcMessage(string RawMessage)
+        public string RawMessage { get; private set; }
+        public string Prefix { get; private set; }
+        public string Command { get; private set; }
+        public string[] Parameters { get; private set; }
+
+        public IrcMessage(string rawMessage)
         {
-            this.RawMessage = RawMessage;
-            var matches = Regex.Match(RawMessage,
-                @"(?::(?<Prefix>[^ ]+) +)?(?<Command>[^ :]+)" +
-                @"(?<payload>(?<middle>(?: +[^ :]+)*)(?<coda> +:(?<trailing>.*)?)?)");
+            RawMessage = rawMessage;
 
-            Prefix = matches.Groups["Prefix"].Value;
-            Command = matches.Groups["Command"].Value;
-            Payload = matches.Groups["payload"].Value.Trim();
+            if (rawMessage.StartsWith(":"))
+            {
+                Prefix = rawMessage.Substring(1, rawMessage.IndexOf(' ') - 1);
+                rawMessage = rawMessage.Substring(rawMessage.IndexOf(' ') + 1);
+            }
 
-            var parameters = new List<string>();
-            parameters.AddRange(matches.Groups["middle"].Value
-                .Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-            if (!string.IsNullOrEmpty(matches.Groups["trailing"].Value))
-                parameters.Add(matches.Groups["trailing"].Value);
-
-            Parameters = parameters.ToArray();
+            if (rawMessage.Contains(' '))
+            {
+                Command = rawMessage.Remove(rawMessage.IndexOf(' '));
+                rawMessage = rawMessage.Substring(rawMessage.IndexOf(' ') + 1);
+                // Parse parameters
+                var parameters = new List<string>();
+                while (!string.IsNullOrEmpty(rawMessage))
+                {
+                    if (rawMessage.StartsWith(":"))
+                    {
+                        parameters.Add(rawMessage.Substring(1));
+                        break;
+                    }
+                    if (!rawMessage.Contains(' '))
+                    {
+                        parameters.Add(rawMessage);
+                        rawMessage = string.Empty;
+                        break;
+                    }
+                    parameters.Add(rawMessage.Remove(rawMessage.IndexOf(' ')));
+                    rawMessage = rawMessage.Substring(rawMessage.IndexOf(' ') + 1);
+                }
+                Parameters = parameters.ToArray();
+            }
+            else
+            {
+                // Violates RFC 1459, but we'll parse it anyway
+                Command = rawMessage;
+                Parameters = new string[0];
+            }
         }
-
-        public string RawMessage, Prefix, Command, Payload;
-        public string[] Parameters;
     }
 }

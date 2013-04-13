@@ -53,7 +53,7 @@ namespace ChatSharp.Handlers
 
         public static void HandlePing(IrcClient client, IrcMessage message)
         {
-            client.SendRawMessage("PONG :{0}", message.Payload);
+            client.SendRawMessage("PONG :{0}", message.Parameters[0]);
         }
 
         public static void HandleNotice(IrcClient client, IrcMessage message)
@@ -83,40 +83,33 @@ namespace ChatSharp.Handlers
 
         public static void HandleMode(IrcClient client, IrcMessage message)
         {
-            string target, mode;
+            string target, mode = null;
+            int i = 2;
             if (message.Command == "MODE")
             {
                 target = message.Parameters[0];
-                mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
+                mode = message.Parameters[1];
             }
             else
             {
                 target = message.Parameters[1];
-                mode = message.Payload.Substring(message.Payload.IndexOf(' ') + 1);
-                mode = mode.Substring(mode.IndexOf(' ') + 1);
+                mode = message.Parameters[2];
+                i++;
             }
 
             var eventArgs = new ModeChangeEventArgs(target, new IrcUser(message.Prefix), mode);
             client.OnModeChanged(eventArgs);
             // Handle change
-            var change = mode;
-            var parameters = new string[0];
-            if (change.Contains(' '))
-            {
-                parameters = change.Substring(change.IndexOf(' ') + 1).Split(' ');
-                change = change.Remove(change.IndexOf(' '));
-            }
-            bool add = change[0] == '+';
-            change = change.Substring(1);
+            bool add = mode[0] == '+';
+            mode = mode.Substring(1);
             if (target.StartsWith("#"))
             {
                 var channel = client.Channels[target];
-                int i = 0;
-                foreach (char c in change)
+                foreach (char c in mode)
                 {
                     if (c == 'o')
                     {
-                        var user = parameters[i++];
+                        var user = message.Parameters[i++];
                         if (add)
                             channel.Operators.Add(channel.Users[user]);
                         else
@@ -124,7 +117,7 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'v')
                     {
-                        var user = parameters[i++];
+                        var user = message.Parameters[i++];
                         if (add)
                             channel.Voiced.Add(channel.Users[user]);
                         else
@@ -132,7 +125,7 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'b')
                     {
-                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
+                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Bans.Add(mask);
                         else
@@ -143,7 +136,7 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'e')
                     {
-                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
+                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Exceptions.Add(mask);
                         else
@@ -154,7 +147,7 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'q')
                     {
-                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
+                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Quiets.Add(mask);
                         else
@@ -165,7 +158,7 @@ namespace ChatSharp.Handlers
                     }
                     else if (c == 'I')
                     {
-                        var mask = new Mask(parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
+                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
                         if (add)
                             channel.Invites.Add(mask);
                         else
@@ -196,7 +189,7 @@ namespace ChatSharp.Handlers
             else
             {
                 // TODO: Handle user modes other than ourselves?
-                foreach (char c in change)
+                foreach (char c in mode)
                 {
                     if (add)
                     {
