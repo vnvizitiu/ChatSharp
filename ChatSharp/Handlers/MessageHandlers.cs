@@ -182,7 +182,7 @@ namespace ChatSharp.Handlers
                 }
                 if (message.Command == "324")
                 {
-                    var operation = RequestOperation.DequeueOperation("MODE " + channel.Name);
+                    var operation = client.RequestManager.DequeueOperation("MODE " + channel.Name);
                     operation.Callback(operation);
                 }
             }

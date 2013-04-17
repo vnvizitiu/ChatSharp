@@ -61,6 +61,7 @@ namespace ChatSharp
         public IrcUser User { get; set; }
         public ChannelCollection Channels { get; private set; }
         public ClientSettings Settings { get; set; }
+        public RequestManager RequestManager { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user)
         {
@@ -74,6 +75,7 @@ namespace ChatSharp
             Settings = new ClientSettings();
             Handlers = new Dictionary<string, MessageHandler>();
             MessageHandlers.RegisterDefaultHandlers(this);
+            RequestManager = new RequestManager();
         }
 
         public void ConnectAsync()
