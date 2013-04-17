@@ -8,47 +8,47 @@ namespace ChatSharp.Handlers
 {
     internal static class MessageHandlers
     {
-        public static void RegisterDefaultHandlers()
+        public static void RegisterDefaultHandlers(IrcClient client)
         {
             // General
-            IrcClient.SetHandler("PING", HandlePing);
-            IrcClient.SetHandler("NOTICE", HandleNotice);
-            IrcClient.SetHandler("PRIVMSG", HandlePrivmsg);
-            IrcClient.SetHandler("MODE", HandleMode);
-            IrcClient.SetHandler("324", HandleMode);
-            IrcClient.SetHandler("431", HandleErronousNick);
-            IrcClient.SetHandler("432", HandleErronousNick);
-            IrcClient.SetHandler("433", HandleErronousNick);
-            IrcClient.SetHandler("436", HandleErronousNick);
+            client.SetHandler("PING", HandlePing);
+            client.SetHandler("NOTICE", HandleNotice);
+            client.SetHandler("PRIVMSG", HandlePrivmsg);
+            client.SetHandler("MODE", HandleMode);
+            client.SetHandler("324", HandleMode);
+            client.SetHandler("431", HandleErronousNick);
+            client.SetHandler("432", HandleErronousNick);
+            client.SetHandler("433", HandleErronousNick);
+            client.SetHandler("436", HandleErronousNick);
 
             // MOTD Handlers
-            IrcClient.SetHandler("375", MOTDHandlers.HandleMOTDStart);
-            IrcClient.SetHandler("372", MOTDHandlers.HandleMOTD);
-            IrcClient.SetHandler("376", MOTDHandlers.HandleEndOfMOTD);
+            client.SetHandler("375", MOTDHandlers.HandleMOTDStart);
+            client.SetHandler("372", MOTDHandlers.HandleMOTD);
+            client.SetHandler("376", MOTDHandlers.HandleEndOfMOTD);
 
             // Channel handlers
-            IrcClient.SetHandler("JOIN", ChannelHandlers.HandleJoin);
-            IrcClient.SetHandler("PART", ChannelHandlers.HandlePart);
-            IrcClient.SetHandler("353", ChannelHandlers.HandleUserListPart);
-            IrcClient.SetHandler("366", ChannelHandlers.HandleUserListEnd);
+            client.SetHandler("JOIN", ChannelHandlers.HandleJoin);
+            client.SetHandler("PART", ChannelHandlers.HandlePart);
+            client.SetHandler("353", ChannelHandlers.HandleUserListPart);
+            client.SetHandler("366", ChannelHandlers.HandleUserListEnd);
 
             // User handlers
-            IrcClient.SetHandler("311", UserHandlers.HandleWhoIsUser);
-            IrcClient.SetHandler("312", UserHandlers.HandleWhoIsServer);
-            IrcClient.SetHandler("313", UserHandlers.HandleWhoIsOperator);
-            IrcClient.SetHandler("317", UserHandlers.HandleWhoIsIdle);
-            IrcClient.SetHandler("318", UserHandlers.HandleWhoIsEnd);
-            IrcClient.SetHandler("319", UserHandlers.HandleWhoIsChannels);
+            client.SetHandler("311", UserHandlers.HandleWhoIsUser);
+            client.SetHandler("312", UserHandlers.HandleWhoIsServer);
+            client.SetHandler("313", UserHandlers.HandleWhoIsOperator);
+            client.SetHandler("317", UserHandlers.HandleWhoIsIdle);
+            client.SetHandler("318", UserHandlers.HandleWhoIsEnd);
+            client.SetHandler("319", UserHandlers.HandleWhoIsChannels);
 
             // Listing handlers
-            IrcClient.SetHandler("367", ListingHandlers.HandleBanListPart);
-            IrcClient.SetHandler("368", ListingHandlers.HandleBanListEnd);
-            IrcClient.SetHandler("348", ListingHandlers.HandleExceptionListPart);
-            IrcClient.SetHandler("349", ListingHandlers.HandleExceptionListEnd);
-            IrcClient.SetHandler("346", ListingHandlers.HandleInviteListPart);
-            IrcClient.SetHandler("347", ListingHandlers.HandleInviteListEnd);
-            IrcClient.SetHandler("728", ListingHandlers.HandleQuietListPart);
-            IrcClient.SetHandler("729", ListingHandlers.HandleQuietListEnd);
+            client.SetHandler("367", ListingHandlers.HandleBanListPart);
+            client.SetHandler("368", ListingHandlers.HandleBanListEnd);
+            client.SetHandler("348", ListingHandlers.HandleExceptionListPart);
+            client.SetHandler("349", ListingHandlers.HandleExceptionListEnd);
+            client.SetHandler("346", ListingHandlers.HandleInviteListPart);
+            client.SetHandler("347", ListingHandlers.HandleInviteListEnd);
+            client.SetHandler("728", ListingHandlers.HandleQuietListPart);
+            client.SetHandler("729", ListingHandlers.HandleQuietListEnd);
         }
 
         public static void HandlePing(IrcClient client, IrcMessage message)

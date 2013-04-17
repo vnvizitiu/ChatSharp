@@ -10,15 +10,9 @@ namespace ChatSharp
 {
     public partial class IrcClient
     {
-        static IrcClient()
-        {
-            Handlers = new Dictionary<string, MessageHandler>();
-            MessageHandlers.RegisterDefaultHandlers();
-        }
-        
         public delegate void MessageHandler(IrcClient client, IrcMessage message);
-        internal static Dictionary<string, MessageHandler> Handlers { get; set; }
-        public static void SetHandler(string message, MessageHandler handler)
+        private Dictionary<string, MessageHandler> Handlers { get; set; }
+        public void SetHandler(string message, MessageHandler handler)
         {
 #if DEBUG
             // This is the default behavior if 3rd parties want to handle certain messages themselves
@@ -78,6 +72,7 @@ namespace ChatSharp
             Encoding = Encoding.UTF8;
             Channels = new ChannelCollection(this);
             Settings = new ClientSettings();
+            MessageHandlers.RegisterDefaultHandlers(this);
         }
 
         public void ConnectAsync()
