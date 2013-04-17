@@ -72,6 +72,7 @@ namespace ChatSharp
             Encoding = Encoding.UTF8;
             Channels = new ChannelCollection(this);
             Settings = new ClientSettings();
+            Handlers = new Dictionary<string, MessageHandler>();
             MessageHandlers.RegisterDefaultHandlers(this);
         }
 
@@ -93,7 +94,8 @@ namespace ChatSharp
             if (!string.IsNullOrEmpty(User.Password))
                 SendRawMessage("PASS {0}", User.Password);
             SendRawMessage("NICK {0}", User.Nick);
-            SendRawMessage("USER {0} 0.0.0.0 server :{1}", User.User, User.RealName);
+            // hostname, servername are ignored by most IRC servers
+            SendRawMessage("USER {0} hostname servername :{1}", User.User, User.RealName);
         }
 
         private void DataRecieved(IAsyncResult result)
