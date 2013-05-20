@@ -49,6 +49,9 @@ namespace ChatSharp.Handlers
             client.SetHandler("347", ListingHandlers.HandleInviteListEnd);
             client.SetHandler("728", ListingHandlers.HandleQuietListPart);
             client.SetHandler("729", ListingHandlers.HandleQuietListEnd);
+
+            // Server handlers
+            client.SetHandler("005", ServerHandlers.HandleISupport);
         }
 
         public static void HandlePing(IrcClient client, IrcMessage message)

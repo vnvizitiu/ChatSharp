@@ -62,6 +62,7 @@ namespace ChatSharp
         public ChannelCollection Channels { get; private set; }
         public ClientSettings Settings { get; set; }
         public RequestManager RequestManager { get; set; }
+        public ServerInfo ServerInfo { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user)
         {
@@ -235,6 +236,11 @@ namespace ChatSharp
         protected internal virtual void OnConnectionComplete(EventArgs e)
         {
             if (ConnectionComplete != null) ConnectionComplete(this, e);
+        }
+        public event EventHandler<SupportsEventArgs> ServerInfoRecieved;
+        protected internal virtual void OnServerInfoRecieved(SupportsEventArgs e)
+        {
+            if (ServerInfoRecieved != null) ServerInfoRecieved(this, e);
         }
     }
 }

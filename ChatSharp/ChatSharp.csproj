@@ -52,6 +52,7 @@
     <Compile Include="Events\RawMessageEventArgs.cs" />
     <Compile Include="Events\ServerMOTDEventArgs.cs" />
     <Compile Include="Events\SocketErrorEventArgs.cs" />
+    <Compile Include="Events\SupportsEventArgs.cs" />
     <Compile Include="Handlers\ChannelHandlers.cs" />
     <Compile Include="Handlers\ListingHandlers.cs" />
     <Compile Include="Handlers\MessageHandlers.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestManager.cs" />
+    <Compile Include="ServerInfo.cs" />
     <Compile Include="UserCollection.cs" />
     <Compile Include="WhoIs.cs" />
   </ItemGroup>
