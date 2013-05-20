@@ -16,7 +16,9 @@ namespace ChatSharp
 
         public void SendMessage(string message, params string[] destinations)
         {
+            const string illegalCharacters = "\r\n\0";
             if (!destinations.Any()) throw new InvalidOperationException("Message must have at least one target.");
+            if (illegalCharacters.Any(message.Contains)) throw new ArgumentException("Illegal characters are present in message.", "message");
             string to = string.Join(",", destinations);
             SendRawMessage("PRIVMSG {0} :{1}", to, message);
         }
@@ -59,7 +61,7 @@ namespace ChatSharp
         public void WhoIs(string nick, Action<WhoIs> callback)
         {
             var whois = new WhoIs();
-            RequestOperation.QueueOperation("WHOIS " + nick, new RequestOperation(whois, ro =>
+            RequestManager.QueueOperation("WHOIS " + nick, new RequestOperation(whois, ro =>
                 {
                     if (callback != null)
                         callback((WhoIs)ro.State);
@@ -74,7 +76,7 @@ namespace ChatSharp
 
         public void GetMode(string channel, Action<IrcChannel> callback)
         {
-            RequestOperation.QueueOperation("MODE " + channel, new RequestOperation(channel, ro =>
+            RequestManager.QueueOperation("MODE " + channel, new RequestOperation(channel, ro =>
                 {
                     var c = Channels[(string)ro.State];
                     if (callback != null)
@@ -90,7 +92,7 @@ namespace ChatSharp
 
         public void GetBanList(string channel, Action<Mask[]> callback)
         {
-            RequestOperation.QueueOperation("BLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            RequestManager.QueueOperation("BLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
                 {
                     var bans = ro.State as List<Mask>;
                     if (Channels.Contains(channel))
@@ -112,7 +114,7 @@ namespace ChatSharp
 
         public void GetExceptionList(string channel, Action<Mask[]> callback)
         {
-            RequestOperation.QueueOperation("ELIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            RequestManager.QueueOperation("ELIST " + channel, new RequestOperation(new List<Mask>(), ro =>
             {
                 var exceptions = ro.State as List<Mask>;
                 if (Channels.Contains(channel))
@@ -134,7 +136,7 @@ namespace ChatSharp
 
         public void GetInviteList(string channel, Action<Mask[]> callback)
         {
-            RequestOperation.QueueOperation("ILIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            RequestManager.QueueOperation("ILIST " + channel, new RequestOperation(new List<Mask>(), ro =>
             {
                 var invites = ro.State as List<Mask>;
                 if (Channels.Contains(channel))
@@ -156,7 +158,7 @@ namespace ChatSharp
 
         public void GetQuietList(string channel, Action<Mask[]> callback)
         {
-            RequestOperation.QueueOperation("QLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
+            RequestManager.QueueOperation("QLIST " + channel, new RequestOperation(new List<Mask>(), ro =>
             {
                 var quiets = ro.State as List<Mask>;
                 if (Channels.Contains(channel))

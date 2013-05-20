@@ -10,15 +10,9 @@ namespace ChatSharp
 {
     public partial class IrcClient
     {
-        static IrcClient()
-        {
-            Handlers = new Dictionary<string, MessageHandler>();
-            MessageHandlers.RegisterDefaultHandlers();
-        }
-        
         public delegate void MessageHandler(IrcClient client, IrcMessage message);
-        internal static Dictionary<string, MessageHandler> Handlers { get; set; }
-        public static void SetHandler(string message, MessageHandler handler)
+        private Dictionary<string, MessageHandler> Handlers { get; set; }
+        public void SetHandler(string message, MessageHandler handler)
         {
 #if DEBUG
             // This is the default behavior if 3rd parties want to handle certain messages themselves
@@ -67,6 +61,7 @@ namespace ChatSharp
         public IrcUser User { get; set; }
         public ChannelCollection Channels { get; private set; }
         public ClientSettings Settings { get; set; }
+        public RequestManager RequestManager { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user)
         {
@@ -78,6 +73,9 @@ namespace ChatSharp
             Encoding = Encoding.UTF8;
             Channels = new ChannelCollection(this);
             Settings = new ClientSettings();
+            Handlers = new Dictionary<string, MessageHandler>();
+            MessageHandlers.RegisterDefaultHandlers(this);
+            RequestManager = new RequestManager();
         }
 
         public void ConnectAsync()
@@ -98,7 +96,8 @@ namespace ChatSharp
             if (!string.IsNullOrEmpty(User.Password))
                 SendRawMessage("PASS {0}", User.Password);
             SendRawMessage("NICK {0}", User.Nick);
-            SendRawMessage("USER {0} 0.0.0.0 server :{1}", User.User, User.RealName);
+            // hostname, servername are ignored by most IRC servers
+            SendRawMessage("USER {0} hostname servername :{1}", User.User, User.RealName);
         }
 
         private void DataRecieved(IAsyncResult result)
