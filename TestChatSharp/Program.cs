@@ -47,6 +47,11 @@ namespace TestChatSharp
                                     ).ToArray()), e.PrivateMessage.User.Nick);
                         });
                     }
+                    else if (e.PrivateMessage.Message.StartsWith(".mode "))
+                    {
+                        var parts = e.PrivateMessage.Message.Split(' ');
+                        client.ChangeMode(parts[1], parts[2]);
+                    }
                 };
             client.ChannelMessageRecieved += (s, e) =>
                 {

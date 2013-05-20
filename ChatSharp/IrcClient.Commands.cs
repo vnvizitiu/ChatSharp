@@ -170,5 +170,10 @@ namespace ChatSharp
             }));
             SendRawMessage("MODE {0} q", channel);
         }
+
+        public void ChangeMode(string channel, string change)
+        {
+            SendRawMessage("MODE {0} {1}", channel, change);
+        }
     }
 }

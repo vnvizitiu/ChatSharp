@@ -97,6 +97,12 @@ namespace ChatSharp
             Client.SendMessage(message, Name);
         }
 
+
+        public void ChangeMode(string change)
+        {
+            Client.ChangeMode(Name, change);
+        }
+
         public void Ban(string mask)
         {
             Client.SendRawMessage("MODE {0} +b {1}", Name, mask);
