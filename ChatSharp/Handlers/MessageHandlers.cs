@@ -107,78 +107,16 @@ namespace ChatSharp.Handlers
                 var channel = client.Channels[target];
                 foreach (char c in mode)
                 {
-                    if (c == 'o')
+                    // TODO: Handle other types of MODEs
+                    if (channel.Mode == null)
+                        channel.Mode = string.Empty;
+                    if (add)
                     {
-                        var user = message.Parameters[i++];
-                        if (add)
-                            channel.Operators.Add(channel.Users[user]);
-                        else
-                            channel.Operators.Remove(user);
-                    }
-                    else if (c == 'v')
-                    {
-                        var user = message.Parameters[i++];
-                        if (add)
-                            channel.Voiced.Add(channel.Users[user]);
-                        else
-                            channel.Voiced.Remove(user);
-                    }
-                    else if (c == 'b')
-                    {
-                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
-                        if (add)
-                            channel.Bans.Add(mask);
-                        else
-                        {
-                            if (channel.Bans.ContainsMask(mask))
-                                channel.Bans.Remove(mask);
-                        }
-                    }
-                    else if (c == 'e')
-                    {
-                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
-                        if (add)
-                            channel.Exceptions.Add(mask);
-                        else
-                        {
-                            if (channel.Exceptions.ContainsMask(mask))
-                                channel.Exceptions.Remove(mask);
-                        }
-                    }
-                    else if (c == 'q')
-                    {
-                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
-                        if (add)
-                            channel.Quiets.Add(mask);
-                        else
-                        {
-                            if (channel.Quiets.ContainsMask(mask))
-                                channel.Quiets.Remove(mask);
-                        }
-                    }
-                    else if (c == 'I')
-                    {
-                        var mask = new Mask(message.Parameters[i++], new IrcUser(message.Prefix), DateTime.Now);
-                        if (add)
-                            channel.Invites.Add(mask);
-                        else
-                        {
-                            if (channel.Invites.ContainsMask(mask))
-                                channel.Invites.Remove(mask);
-                        }
+                        if (!channel.Mode.Contains(c))
+                            channel.Mode += c.ToString();
                     }
                     else
-                    {
-                        if (channel.Mode == null)
-                            channel.Mode = string.Empty;
-                        if (add)
-                        {
-                            if (!channel.Mode.Contains(c))
-                                channel.Mode += c.ToString();
-                        }
-                        else
-                            channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
-                    }
+                        channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
                 }
                 if (message.Command == "324")
                 {

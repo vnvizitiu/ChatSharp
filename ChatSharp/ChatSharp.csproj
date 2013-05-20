@@ -56,6 +56,7 @@
     <Compile Include="Handlers\ListingHandlers.cs" />
     <Compile Include="Handlers\MessageHandlers.cs" />
     <Compile Include="Handlers\MOTDHandlers.cs" />
+    <Compile Include="Handlers\ServerHandlers.cs" />
     <Compile Include="Handlers\UserHandlers.cs" />
     <Compile Include="IrcChannel.cs" />
     <Compile Include="IrcClient.Commands.cs" />

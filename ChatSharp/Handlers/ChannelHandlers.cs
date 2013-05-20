@@ -40,16 +40,7 @@ namespace ChatSharp.Handlers
             for (int i = 0; i < users.Length; i++)
             {
                 var user = users[i];
-                if (user.StartsWith("@"))
-                {
-                    user = user.Substring(1);
-                    channel.Operators.Add(new IrcUser(user));
-                }
-                if (user.StartsWith("+"))
-                {
-                    user = user.Substring(1);
-                    channel.Voiced.Add(new IrcUser(user));
-                }
+                // TODO: Handle prefixes
                 channel.Users.Add(new IrcUser(user));
             }
         }
