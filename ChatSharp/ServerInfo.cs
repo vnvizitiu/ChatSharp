@@ -95,9 +95,12 @@ namespace ChatSharp
                 ChannelLists = "eIbq";
                 ParameterizedSettings = "k";
                 OptionallyParameterizedSettings = "flj";
+				Settings = string.Empty;
+                ChannelUserModes = "vo"; // I have no idea what I'm doing here
             }
 
             public string ChannelLists { get; internal set; }
+            public string ChannelUserModes { get; set; }
             public string ParameterizedSettings { get; internal set; }
             public string OptionallyParameterizedSettings { get; internal set; }
             public string Settings { get; internal set; }

@@ -26,11 +26,13 @@ namespace ChatSharp
         public string Name { get; internal set; }
         public string Mode { get; internal set; }
         public UserCollection Users { get; set; }
+        public Dictionary<char, UserCollection> UsersByMode { get; set; }
 
         internal IrcChannel(IrcClient client, string name)
         {
             Client = client;
             Users = new UserCollection();
+            UsersByMode = new Dictionary<char, UserCollection>();
             Name = name;
         }
 

@@ -15,7 +15,7 @@ namespace ChatSharp.Handlers
             client.SetHandler("NOTICE", HandleNotice);
             client.SetHandler("PRIVMSG", HandlePrivmsg);
             client.SetHandler("MODE", HandleMode);
-            client.SetHandler("324", HandleMode);
+            //client.SetHandler("324", HandleMode);
             client.SetHandler("431", HandleErronousNick);
             client.SetHandler("432", HandleErronousNick);
             client.SetHandler("433", HandleErronousNick);
@@ -51,6 +51,7 @@ namespace ChatSharp.Handlers
             client.SetHandler("729", ListingHandlers.HandleQuietListEnd);
 
             // Server handlers
+            client.SetHandler("004", ServerHandlers.HandleMyInfo);
             client.SetHandler("005", ServerHandlers.HandleISupport);
         }
 
@@ -110,16 +111,33 @@ namespace ChatSharp.Handlers
                 var channel = client.Channels[target];
                 foreach (char c in mode)
                 {
-                    // TODO: Handle other types of MODEs
                     if (channel.Mode == null)
                         channel.Mode = string.Empty;
-                    if (add)
+					// TODO: Support the ones here that aren't done properly
+                    if (client.ServerInfo.SupportedChannelModes.ParameterizedSettings.Contains(c))
                     {
-                        if (!channel.Mode.Contains(c))
-                            channel.Mode += c.ToString();
                     }
-                    else
-                        channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
+					else if (client.ServerInfo.SupportedChannelModes.ChannelLists.Contains (c))
+					{
+					}
+                    else if (client.ServerInfo.SupportedChannelModes.ChannelUserModes.Contains(c))
+                    {
+                        if (!channel.UsersByMode.ContainsKey(c)) channel.UsersByMode.Add(c, new UserCollection());
+                        if (add)
+                            channel.UsersByMode[c].Add(new IrcUser(message.Parameters[i++]));
+                        else
+                            channel.UsersByMode[c].Remove(message.Parameters[i++]);
+                    }
+                    if (client.ServerInfo.SupportedChannelModes.Settings.Contains(c))
+                    {
+                        if (add)
+                        {
+                            if (!channel.Mode.Contains(c))
+                                channel.Mode += c.ToString();
+                        }
+                        else
+                            channel.Mode = channel.Mode.Replace(c.ToString(), string.Empty);
+                    }
                 }
                 if (message.Command == "324")
                 {

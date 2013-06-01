@@ -29,7 +29,17 @@ namespace ChatSharp.Handlers
             if (client.User.Match(message.Prefix)) // We've parted this channel
                 client.Channels.Remove(client.Channels[message.Parameters[0]]);
             else // Someone has parted a channel we're already in
-                client.Channels[message.Parameters[0]].Users.Remove(new IrcUser(message.Prefix).Nick);
+            {
+                var user = new IrcUser(message.Prefix).Nick;
+                var channel = client.Channels[message.Parameters[0]];
+                if (channel.Users.Contains(user))
+                    channel.Users.Remove(user);
+                foreach (var mode in channel.UsersByMode)
+                {
+                    if (mode.Value.Contains(user))
+                        mode.Value.Remove(user);
+                }
+            }
             client.OnUserPartedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]], new IrcUser(message.Prefix)));
         }
 
@@ -40,8 +50,16 @@ namespace ChatSharp.Handlers
             for (int i = 0; i < users.Length; i++)
             {
                 var user = users[i];
-                // TODO: Handle prefixes
-                channel.Users.Add(new IrcUser(user));
+                var mode = client.ServerInfo.GetModeForPrefix(user[0]);
+                if (mode == null)
+                    channel.Users.Add(new IrcUser(user));
+                else
+                {
+                    channel.Users.Add(new IrcUser(user.Substring(1)));
+                    if (!channel.UsersByMode.ContainsKey(mode.Value))
+                        channel.UsersByMode.Add(mode.Value, new UserCollection());
+                    channel.UsersByMode[mode.Value].Add(new IrcUser(user.Substring(1)));
+                }
             }
         }
 
