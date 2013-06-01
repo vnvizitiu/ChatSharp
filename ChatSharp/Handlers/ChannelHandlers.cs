@@ -70,5 +70,25 @@ namespace ChatSharp.Handlers
             if (client.Settings.ModeOnJoin)
                 client.GetMode(channel.Name, c => Console.WriteLine(c.Mode));
         }
+
+		public static void HandleKick(IrcClient client, IrcMessage message)
+        {
+            var channel = client.Channels[message.Parameters[0]];
+            var kicked = channel.Users[message.Parameters[1]];
+			if (message.Parameters[1] == client.User.Nick) // We've been kicked
+				client.Channels.Remove(client.Channels[message.Parameters[0]]);
+			else
+			{
+                if (channel.Users.Contains(message.Parameters[1]))
+                    channel.Users.Remove(message.Parameters[1]);
+                foreach (var mode in channel.UsersByMode)
+                {
+                    if (mode.Value.Contains(message.Parameters[1]))
+                        mode.Value.Remove(message.Parameters[1]);
+                }
+			}
+            client.OnUserKicked(new KickEventArgs(channel, new IrcUser(message.Prefix),
+                kicked, message.Parameters[2]));
+		}
     }
 }

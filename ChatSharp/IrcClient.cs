@@ -242,5 +242,10 @@ namespace ChatSharp
         {
             if (ServerInfoRecieved != null) ServerInfoRecieved(this, e);
         }
+        public event EventHandler<KickEventArgs> UserKicked;
+        protected internal virtual void OnUserKicked(KickEventArgs e)
+        {
+            if (UserKicked != null) UserKicked(this, e);
+        }
     }
 }

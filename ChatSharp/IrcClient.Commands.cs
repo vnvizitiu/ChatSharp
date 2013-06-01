@@ -53,6 +53,21 @@ namespace ChatSharp
             SendRawMessage("TOPIC {0} :{1}", channel, topic);
         }
 
+        public void KickUser(string channel, string user)
+        {
+            SendRawMessage("KICK {0} {1} :{1}", channel, user);
+        }
+
+        public void KickUser(string channel, string user, string reason)
+        {
+            SendRawMessage("KICK {0} {1} :{2}", channel, user, reason);
+        }
+
+        public void InviteUser(string channel, string user)
+        {
+            SendRawMessage("INVITE {1} {0}", channel, user);
+        }
+
         public void WhoIs(string nick)
         {
             WhoIs(nick, null);

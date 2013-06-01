@@ -71,6 +71,7 @@
     <Compile Include="ServerInfo.cs" />
     <Compile Include="UserCollection.cs" />
     <Compile Include="WhoIs.cs" />
+    <Compile Include="Events\KickEventArgs.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -36,6 +36,21 @@ namespace ChatSharp
             Name = name;
         }
 
+        public void Invite(string nick)
+        {
+            Client.InviteUser(Name, nick);
+        }
+
+        public void Kick(string nick)
+        {
+            Client.KickUser(Name, nick);
+        }
+
+        public void Kick(string nick, string reason)
+        {
+            Client.KickUser(Name, nick, reason);
+        }
+
         public void Part()
         {
             Client.PartChannel(Name);

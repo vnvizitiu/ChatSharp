@@ -94,7 +94,7 @@ namespace ChatSharp
                     i++;
                 }
             }
-            return i == mask.Length;
+            return i == mask.Length && j == value.Length;
         }
 
         public bool Equals(IrcUser other)

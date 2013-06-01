@@ -31,6 +31,7 @@ namespace ChatSharp.Handlers
             client.SetHandler("PART", ChannelHandlers.HandlePart);
             client.SetHandler("353", ChannelHandlers.HandleUserListPart);
             client.SetHandler("366", ChannelHandlers.HandleUserListEnd);
+			client.SetHandler("KICK", ChannelHandlers.HandleKick);
 
             // User handlers
             client.SetHandler("311", UserHandlers.HandleWhoIsUser);
@@ -101,7 +102,8 @@ namespace ChatSharp.Handlers
                 i++;
             }
 
-            var eventArgs = new ModeChangeEventArgs(target, new IrcUser(message.Prefix), mode);
+            var eventArgs = new ModeChangeEventArgs(target, new IrcUser(message.Prefix), 
+                string.Join(" ", message.Parameters.Skip(i - 1).ToArray()));
             client.OnModeChanged(eventArgs);
             // Handle change
             bool add = mode[0] == '+';
@@ -123,10 +125,17 @@ namespace ChatSharp.Handlers
                     else if (client.ServerInfo.SupportedChannelModes.ChannelUserModes.Contains(c))
                     {
                         if (!channel.UsersByMode.ContainsKey(c)) channel.UsersByMode.Add(c, new UserCollection());
+						var user = new IrcUser(message.Parameters[i++]);
                         if (add)
-                            channel.UsersByMode[c].Add(new IrcUser(message.Parameters[i++]));
+						{
+							if (!channel.UsersByMode[c].Contains(user.Nick))
+                            	channel.UsersByMode[c].Add(user);
+						}
                         else
-                            channel.UsersByMode[c].Remove(message.Parameters[i++]);
+						{
+							if (channel.UsersByMode[c].Contains(user.Nick))
+                            	channel.UsersByMode[c].Remove(user);
+						}
                     }
                     if (client.ServerInfo.SupportedChannelModes.Settings.Contains(c))
                     {
