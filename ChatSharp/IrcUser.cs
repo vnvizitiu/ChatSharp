@@ -72,6 +72,8 @@ namespace ChatSharp
 
         public static bool Match(string mask, string value)
         {
+            if (value == null)
+                value = string.Empty;
             int i = 0;
             int j = 0;
             for (; j < value.Length && i < mask.Length; j++)
