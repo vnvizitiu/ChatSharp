@@ -15,12 +15,12 @@ namespace ChatSharp
 
         private List<Mask> Masks { get; set; }
 
-        internal void Add(Mask mask)
+        public void Add(Mask mask)
         {
             Masks.Add(mask);
         }
 
-        internal void Remove(Mask mask)
+        public void Remove(Mask mask)
         {
             Masks.Remove(mask);
         }

@@ -30,7 +30,8 @@ namespace ChatSharp
 
         internal void Remove(string nick)
         {
-            Users.Remove(this[nick]);
+            if (Contains(nick))
+                Users.Remove(this[nick]);
         }
 
         public bool Contains(string nick)

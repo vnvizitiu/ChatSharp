@@ -104,5 +104,16 @@ namespace ChatSharp
         {
             SendRawMessage("MODE {0} {1}", channel, change);
         }
+
+        public void GetModeList(string channel, char mode, Action<MaskCollection> callback)
+        {
+            RequestManager.QueueOperation("GETMODE " + mode + " " + channel, new RequestOperation(new MaskCollection(), ro =>
+                {
+                    var c = (MaskCollection)ro.State;
+                    if (callback != null)
+                        callback(c);
+                }));
+            SendRawMessage("MODE {0} {1}", channel, mode);
+        }
     }
 }

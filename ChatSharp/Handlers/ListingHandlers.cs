@@ -11,14 +11,14 @@ namespace ChatSharp.Handlers
         {
             var parameterString = message.RawMessage.Substring(message.RawMessage.IndexOf(' '));
             var parameters = parameterString.Substring(parameterString.IndexOf(' ')).Split(' ');
-            var request = client.RequestManager.PeekOperation("BLIST " + parameters[1]);
-            var list = (List<Mask>)request.State;
+            var request = client.RequestManager.PeekOperation("GETMODE b " + parameters[1]);
+            var list = (MaskCollection)request.State;
             list.Add(new Mask(parameters[2], new IrcUser(parameters[3]), IrcClient.DateTimeFromIrcTime(int.Parse(parameters[4]))));
         }
 
         public static void HandleBanListEnd(IrcClient client, IrcMessage message)
         {
-            var request = client.RequestManager.DequeueOperation("BLIST " + message.Parameters[1]);
+            var request = client.RequestManager.DequeueOperation("GETMODE b " + message.Parameters[1]);
             if (request.Callback != null)
                 request.Callback(request);
         }
@@ -27,14 +27,14 @@ namespace ChatSharp.Handlers
         {
             var parameterString = message.RawMessage.Substring(message.RawMessage.IndexOf(' ') + 1);
             var parameters = parameterString.Substring(parameterString.IndexOf(' ') + 1).Split(' ');
-            var request = client.RequestManager.PeekOperation("ELIST " + parameters[1]);
-            var list = (List<Mask>)request.State;
+            var request = client.RequestManager.PeekOperation("GETMODE e " + parameters[1]);
+            var list = (MaskCollection)request.State;
             list.Add(new Mask(parameters[2], new IrcUser(parameters[3]), IrcClient.DateTimeFromIrcTime(int.Parse(parameters[4]))));
         }
 
         public static void HandleExceptionListEnd(IrcClient client, IrcMessage message)
         {
-            var request = client.RequestManager.DequeueOperation("ELIST " + message.Parameters[1]);
+            var request = client.RequestManager.DequeueOperation("GETMODE e " + message.Parameters[1]);
             if (request.Callback != null)
                 request.Callback(request);
         }
@@ -43,14 +43,14 @@ namespace ChatSharp.Handlers
         {
             var parameterString = message.RawMessage.Substring(message.RawMessage.IndexOf(' ') + 1);
             var parameters = parameterString.Substring(parameterString.IndexOf(' ') + 1).Split(' ');
-            var request = client.RequestManager.PeekOperation("ILIST " + parameters[1]);
-            var list = (List<Mask>)request.State;
+            var request = client.RequestManager.PeekOperation("GETMODE I " + parameters[1]);
+            var list = (MaskCollection)request.State;
             list.Add(new Mask(parameters[2], new IrcUser(parameters[3]), IrcClient.DateTimeFromIrcTime(int.Parse(parameters[4]))));
         }
 
         public static void HandleInviteListEnd(IrcClient client, IrcMessage message)
         {
-            var request = client.RequestManager.DequeueOperation("ILIST " + message.Parameters[1]);
+            var request = client.RequestManager.DequeueOperation("GETMODE I " + message.Parameters[1]);
             if (request.Callback != null)
                 request.Callback(request);
         }
@@ -59,14 +59,14 @@ namespace ChatSharp.Handlers
         {
             var parameterString = message.RawMessage.Substring(message.RawMessage.IndexOf(' ') + 1);
             var parameters = parameterString.Substring(parameterString.IndexOf(' ') + 1).Split(' ');
-            var request = client.RequestManager.PeekOperation("QLIST " + parameters[1]);
-            var list = (List<Mask>)request.State;
+            var request = client.RequestManager.PeekOperation("GETMODE q " + parameters[1]);
+            var list = (MaskCollection)request.State;
             list.Add(new Mask(parameters[2], new IrcUser(parameters[3]), IrcClient.DateTimeFromIrcTime(int.Parse(parameters[4]))));
         }
 
         public static void HandleQuietListEnd(IrcClient client, IrcMessage message)
         {
-            var request = client.RequestManager.DequeueOperation("QLIST " + message.Parameters[1]);
+            var request = client.RequestManager.DequeueOperation("GETMODE q " + message.Parameters[1]);
             if (request.Callback != null)
                 request.Callback(request);
         }
