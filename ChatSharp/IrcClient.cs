@@ -89,6 +89,21 @@ namespace ChatSharp
             PingTimer = new Timer(30000);
         }
 
+		public void Quit()
+		{
+			Quit(null);
+		}
+
+		public void Quit(string reason)
+		{
+			if (reason == null)
+				SendRawMessage("QUIT");
+			else
+				SendRawMessage("QUIT :{0}", reason);
+			Socket.Disconnect(false);
+			PingTimer.Dispose();
+		}
+
         private void ConnectComplete(IAsyncResult result)
         {
             Socket.EndConnect(result);
