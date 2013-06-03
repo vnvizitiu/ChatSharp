@@ -102,13 +102,22 @@ namespace ChatSharp.Handlers
                 i++;
             }
             // Handle change
-            bool add = mode[0] == '+';
-            mode = mode.Substring(1);
+			bool add = true;
             if (target.StartsWith("#"))
             {
                 var channel = client.Channels[target];
                 foreach (char c in mode)
                 {
+					if (c == '+')
+					{
+						add = true;
+						continue;
+					}
+					if (c == '-')
+					{
+						add = false;
+						continue;
+					}
                     if (channel.Mode == null)
                         channel.Mode = string.Empty;
 					// TODO: Support the ones here that aren't done properly
