@@ -19,7 +19,7 @@ namespace ChatSharp
         internal void Add(IrcUser user)
         {
             if (Users.Any(u => u.Hostmask == user.Hostmask))
-                throw new InvalidOperationException("That user already exists in this collection.");
+                return;
             Users.Add(user);
         }
 
