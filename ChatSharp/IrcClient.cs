@@ -37,6 +37,8 @@ namespace ChatSharp
         private int ServerPort { get; set; }
         private Timer PingTimer { get; set; }
 
+        internal string ServerNameFromPing { get; set; }
+
         public string ServerAddress
         {
             get
@@ -87,6 +89,11 @@ namespace ChatSharp
             ReadBufferIndex = 0;
             Socket.BeginConnect(ServerHostname, ServerPort, ConnectComplete, null);
             PingTimer = new Timer(30000);
+            PingTimer.Elapsed += (sender, e) => 
+            {
+                if (!string.IsNullOrEmpty(ServerNameFromPing))
+                    SendRawMessage("PING :{0}", ServerNameFromPing);
+            };
         }
 
 		public void Quit()
@@ -114,6 +121,7 @@ namespace ChatSharp
             SendRawMessage("NICK {0}", User.Nick);
             // hostname, servername are ignored by most IRC servers
             SendRawMessage("USER {0} hostname servername :{1}", User.User, User.RealName);
+            PingTimer.Start();
         }
 
         private void DataRecieved(IAsyncResult result)
