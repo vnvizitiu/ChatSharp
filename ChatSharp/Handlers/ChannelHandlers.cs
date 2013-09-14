@@ -36,7 +36,7 @@ namespace ChatSharp.Handlers
         public static void HandleUserListPart(IrcClient client, IrcMessage message)
         {
             var channel = client.Channels[message.Parameters[2]];
-            var users = message.Parameters[3].Split(' ');
+            var users = message.Parameters[3].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < users.Length; i++)
             {
                 var user = users[i];
