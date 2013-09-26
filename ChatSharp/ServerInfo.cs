@@ -95,7 +95,7 @@ namespace ChatSharp
                 ChannelLists = "eIbq";
                 ParameterizedSettings = "k";
                 OptionallyParameterizedSettings = "flj";
-				Settings = string.Empty;
+                Settings = string.Empty;
                 ChannelUserModes = "vo"; // I have no idea what I'm doing here
             }
 

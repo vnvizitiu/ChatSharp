@@ -97,7 +97,7 @@ namespace ChatSharp.Handlers
         {
             // 004 sendak.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQbcefgijklmnopqrstvz bkloveqjfI
             // TODO: Figure out how to properly handle this message
-			if (client.ServerInfo == null)
+            if (client.ServerInfo == null)
                 client.ServerInfo = new ServerInfo();
             if (message.Parameters.Length >= 5)
             {
