@@ -11,6 +11,7 @@ namespace ChatSharp
         {
             WhoIsOnConnect = true;
             ModeOnJoin = true;
+            GenerateRandomNickIfRefused = true;
         }
 
         /// <summary>
@@ -24,5 +25,9 @@ namespace ChatSharp
         /// IrcChannel.Mode will be null until the mode is explicitly requested.
         /// </summary>
         public bool ModeOnJoin { get; set; }
+        /// <summary>
+        /// If true, the library will generate a random nick with alphanumerical characters if it
+        /// encounters a NICK error.
+        public bool GenerateRandomNickIfRefused { get; set; }
     }
 }

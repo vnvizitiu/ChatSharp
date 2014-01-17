@@ -20,7 +20,14 @@ namespace ChatSharp
                 string[] mask = host.Split('@', '!');
                 Nick = mask[0];
                 User = mask[1];
-                Hostname = mask[2];
+                if (mask.Length <= 2)
+                {
+                    Hostname = "";
+                }
+                else
+                {
+                    Hostname = mask[2];
+                }
             }
         }
 

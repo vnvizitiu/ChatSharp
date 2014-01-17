@@ -83,7 +83,7 @@ namespace ChatSharp.Handlers
             if (message.Command == "433") // Nick in use
                 client.OnNickInUse(eventArgs);
             // else ... TODO
-            if (!eventArgs.DoNotHandle)
+            if (!eventArgs.DoNotHandle && client.Settings.GenerateRandomNickIfRefused)
                 client.Nick(eventArgs.NewNick);
         }
 
