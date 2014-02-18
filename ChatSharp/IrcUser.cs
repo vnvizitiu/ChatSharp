@@ -98,7 +98,7 @@ namespace ChatSharp
                 }
                 else
                 {
-                    if (mask[i] != value[j])
+                    if (char.ToUpper(mask[i]) != char.ToUpper(value[j]))
                         return false;
                     i++;
                 }

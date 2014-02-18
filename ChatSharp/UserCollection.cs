@@ -34,6 +34,11 @@ namespace ChatSharp
                 Users.Remove(this[nick]);
         }
 
+        public bool ContainsMask(string mask)
+        {
+            return Users.Any(u => u.Match(mask));
+        }
+
         public bool Contains(string nick)
         {
             return Users.Any(u => u.Nick == nick);
