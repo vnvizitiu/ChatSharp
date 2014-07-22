@@ -23,6 +23,15 @@ namespace ChatSharp
             SendRawMessage("PRIVMSG {0} :{1}", to, message);
         }
 
+        public void SendAction(string message, params string[] destinations)
+        {
+            const string illegalCharacters = "\r\n\0";
+            if (!destinations.Any()) throw new InvalidOperationException("Message must have at least one target.");
+            if (illegalCharacters.Any(message.Contains)) throw new ArgumentException("Illegal characters are present in message.", "message");
+            string to = string.Join(",", destinations);
+            SendRawMessage("PRIVMSG {0} :\x0001ACTION {1}\x0001", to, message);
+        }
+
         public void PartChannel(string channel)
         {
             if (!Channels.Contains(channel))
