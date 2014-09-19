@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net.Security;
 using System.Text;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -36,6 +38,9 @@ namespace ChatSharp
         private string ServerHostname { get; set; }
         private int ServerPort { get; set; }
         private Timer PingTimer { get; set; }
+        private Socket Socket { get; set; }
+        private Queue<string> WriteQueue { get; set; }
+        private bool IsWriting { get; set; }
 
         internal string ServerNameFromPing { get; set; }
 
@@ -58,7 +63,8 @@ namespace ChatSharp
             }
         }
 
-        public Socket Socket { get; set; }
+        public Stream NetworkStream { get; set; }
+        public bool UseSSL { get; private set; }
         public Encoding Encoding { get; set; }
         public IrcUser User { get; set; }
         public ChannelCollection Channels { get; private set; }
@@ -66,7 +72,7 @@ namespace ChatSharp
         public RequestManager RequestManager { get; set; }
         public ServerInfo ServerInfo { get; set; }
 
-        public IrcClient(string serverAddress, IrcUser user)
+        public IrcClient(string serverAddress, IrcUser user, bool useSSL = false)
         {
             if (serverAddress == null) throw new ArgumentNullException("serverAddress");
             if (user == null) throw new ArgumentNullException("user");
@@ -79,6 +85,8 @@ namespace ChatSharp
             Handlers = new Dictionary<string, MessageHandler>();
             MessageHandlers.RegisterDefaultHandlers(this);
             RequestManager = new RequestManager();
+            UseSSL = useSSL;
+            WriteQueue = new Queue<string>();
         }
 
         public void ConnectAsync()
@@ -107,14 +115,27 @@ namespace ChatSharp
                 SendRawMessage("QUIT");
             else
                 SendRawMessage("QUIT :{0}", reason);
-            Socket.Disconnect(false);
+            Socket.BeginDisconnect(false, ar =>
+            {
+                Socket.EndDisconnect(ar);
+                NetworkStream.Dispose();
+                NetworkStream = null;
+            }, null);
             PingTimer.Dispose();
         }
 
         private void ConnectComplete(IAsyncResult result)
         {
             Socket.EndConnect(result);
-            Socket.BeginReceive(ReadBuffer, ReadBufferIndex, ReadBuffer.Length, SocketFlags.None, DataRecieved, null);
+
+            NetworkStream = new NetworkStream(Socket);
+            if (UseSSL)
+            {
+                NetworkStream = new SslStream(NetworkStream);
+                ((SslStream)NetworkStream).AuthenticateAsClient(ServerHostname);
+            }
+
+            NetworkStream.BeginRead(ReadBuffer, ReadBufferIndex, ReadBuffer.Length, DataRecieved, null);
             // Write login info
             if (!string.IsNullOrEmpty(User.Password))
                 SendRawMessage("PASS {0}", User.Password);
@@ -126,13 +147,27 @@ namespace ChatSharp
 
         private void DataRecieved(IAsyncResult result)
         {
-            SocketError error;
-            int length = Socket.EndReceive(result, out error) + ReadBufferIndex;
-            if (error != SocketError.Success)
+            if (NetworkStream == null)
             {
-                OnNetworkError(new SocketErrorEventArgs(error));
+                OnNetworkError(new SocketErrorEventArgs(SocketError.NotConnected));
                 return;
             }
+
+            int length;
+            try
+            {
+                length = NetworkStream.EndRead(result) + ReadBufferIndex;
+            }
+            catch (IOException e)
+            {
+                var socketException = e.InnerException as SocketException;
+                if (socketException != null)
+                    OnNetworkError(new SocketErrorEventArgs(socketException.SocketErrorCode));
+                else
+                    throw;
+                return;
+            }
+
             ReadBufferIndex = 0;
             while (length > 0)
             {
@@ -148,7 +183,7 @@ namespace ChatSharp
                 Array.Copy(ReadBuffer, messageLength, ReadBuffer, 0, length - messageLength);
                 length -= messageLength;
             }
-            Socket.BeginReceive(ReadBuffer, ReadBufferIndex, ReadBuffer.Length - ReadBufferIndex, SocketFlags.None, DataRecieved, null);
+            NetworkStream.BeginRead(ReadBuffer, ReadBufferIndex, ReadBuffer.Length - ReadBufferIndex, DataRecieved, null);
         }
 
         private void HandleMessage(string rawMessage)
@@ -165,9 +200,22 @@ namespace ChatSharp
 
         public void SendRawMessage(string message, params object[] format)
         {
+            if (NetworkStream == null)
+            {
+                OnNetworkError(new SocketErrorEventArgs(SocketError.NotConnected));
+                return;
+            }
+
             message = string.Format(message, format);
             var data = Encoding.GetBytes(message + "\r\n");
-            Socket.BeginSend(data, 0, data.Length, SocketFlags.None, MessageSent, message);
+
+            if (!IsWriting)
+            {
+                NetworkStream.BeginWrite(data, 0, data.Length, MessageSent, message);
+                IsWriting = true;
+            }
+            else
+                WriteQueue.Enqueue(message);
         }
 
         public void SendIrcMessage(IrcMessage message)
@@ -177,12 +225,32 @@ namespace ChatSharp
 
         private void MessageSent(IAsyncResult result)
         {
-            SocketError error;
-            Socket.EndSend(result, out error);
-            if (error != SocketError.Success)
-                OnNetworkError(new SocketErrorEventArgs(error));
-            else
-                OnRawMessageSent(new RawMessageEventArgs((string)result.AsyncState, true));
+            if (NetworkStream == null)
+            {
+                OnNetworkError(new SocketErrorEventArgs(SocketError.NotConnected));
+                return;
+            }
+
+            try
+            {
+                NetworkStream.EndWrite(result);
+            }
+            catch (IOException e)
+            {
+                var socketException = e.InnerException as SocketException;
+                if (socketException != null)
+                    OnNetworkError(new SocketErrorEventArgs(socketException.SocketErrorCode));
+                else
+                    throw;
+                return;
+            }
+
+            IsWriting = false;
+
+            OnRawMessageSent(new RawMessageEventArgs((string)result.AsyncState, true));
+
+            if (WriteQueue.Count > 0)
+                SendRawMessage(WriteQueue.Dequeue());
         }
 
         public event EventHandler<SocketErrorEventArgs> NetworkError;
