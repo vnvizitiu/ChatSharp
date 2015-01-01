@@ -49,7 +49,7 @@ namespace ChatSharp.Handlers
             var users = message.Parameters[3].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
             foreach (var user in users)
             {
-                if(string.IsNullOrWhiteSpace(user))continue;
+                if (string.IsNullOrWhiteSpace(user)) continue;
                 var mode = client.ServerInfo.GetModeForPrefix(user[0]);
                 if (mode == null)
                     channel.Users.Add(new IrcUser(user));
