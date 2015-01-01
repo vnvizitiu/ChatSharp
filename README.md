@@ -15,7 +15,7 @@ client.ChannelMessageRecieved += (s, e) =>
         channel.SendMessage(string.Join(", ", channel.Users.Select(u => u.Nick)));
     else if (e.PrivateMessage.Message.StartsWith(".ban "))
     {
-        if (!channel.Users.Contains(client.User))
+        if (!channel.UsersByMode['@'].Contains(client.User))
         {
             channel.SendMessage("I'm not an op here!");
             return;
