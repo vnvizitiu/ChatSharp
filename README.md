@@ -6,7 +6,7 @@ Supports a lot of RFC 1459 and a little of 2812. Should be sufficient for most o
 
 ```csharp
 var client = new IrcClient("irc.freenode.net", new IrcUser("ChatSharp", "ChatSharp"));
-client.ConnectionComplete += (s, e) => client.Join("#botwar");
+client.ConnectionComplete += (s, e) => client.JoinChannel("#botwar");
 client.ChannelMessageRecieved += (s, e) =>
 {
     var channel = client.Channels[e.PrivateMessage.Source];
@@ -15,7 +15,7 @@ client.ChannelMessageRecieved += (s, e) =>
         channel.SendMessage(string.Join(", ", channel.Users.Select(u => u.Nick)));
     else if (e.PrivateMessage.Message.StartsWith(".ban "))
     {
-        if (!channel.Operators.Contains(client.User))
+        if (!channel.Users.Contains(client.User))
         {
             channel.SendMessage("I'm not an op here!");
             return;
@@ -24,7 +24,7 @@ client.ChannelMessageRecieved += (s, e) =>
         client.WhoIs(target, whois => channel.Ban("*!*@" + whois.User.Hostname));
     }
 };
-client.Connect();
+client.ConnectAsync();
 
 while (true) ; // Do nothing
 ```
