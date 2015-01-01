@@ -47,9 +47,9 @@ namespace ChatSharp.Handlers
         {
             var channel = client.Channels[message.Parameters[2]];
             var users = message.Parameters[3].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < users.Length; i++)
+            foreach (var user in users)
             {
-                var user = users[i];
+                if(string.IsNullOrWhiteSpace(user))continue;
                 var mode = client.ServerInfo.GetModeForPrefix(user[0]);
                 if (mode == null)
                     channel.Users.Add(new IrcUser(user));
@@ -87,10 +87,9 @@ namespace ChatSharp.Handlers
             {
                 if (channel.Users.Contains(message.Parameters[1]))
                     channel.Users.Remove(message.Parameters[1]);
-                foreach (var mode in channel.UsersByMode)
+                foreach (var mode in channel.UsersByMode.Where(mode => mode.Value.Contains(message.Parameters[1])))
                 {
-                    if (mode.Value.Contains(message.Parameters[1]))
-                        mode.Value.Remove(message.Parameters[1]);
+                    mode.Value.Remove(message.Parameters[1]);
                 }
             }
             client.OnUserKicked(new KickEventArgs(channel, new IrcUser(message.Prefix),
