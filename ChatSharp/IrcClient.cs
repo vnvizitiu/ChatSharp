@@ -65,6 +65,7 @@ namespace ChatSharp
 
         public Stream NetworkStream { get; set; }
         public bool UseSSL { get; private set; }
+        public bool IgnoreInvalidSSL { get; set; }
         public Encoding Encoding { get; set; }
         public IrcUser User { get; set; }
         public ChannelCollection Channels { get; private set; }
@@ -131,7 +132,10 @@ namespace ChatSharp
             NetworkStream = new NetworkStream(Socket);
             if (UseSSL)
             {
-                NetworkStream = new SslStream(NetworkStream);
+                if (IgnoreInvalidSSL)
+                    NetworkStream = new SslStream(NetworkStream, false, (sender, certificate, chain, policyErrors) => true);
+                else
+                    NetworkStream = new SslStream(NetworkStream);
                 ((SslStream)NetworkStream).AuthenticateAsClient(ServerHostname);
             }
 
