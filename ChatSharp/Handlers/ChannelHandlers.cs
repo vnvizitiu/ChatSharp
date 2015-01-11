@@ -12,18 +12,21 @@ namespace ChatSharp.Handlers
     {
         public static void HandleJoin(IrcClient client, IrcMessage message)
         {
+            IrcChannel channel = null;
             if (client.User.Nick == new IrcUser(message.Prefix).Nick)
             {
                 // We've joined this channel
-                var channel = new IrcChannel(client, message.Parameters[0]);
+                channel = new IrcChannel(client, message.Parameters[0]);
                 client.Channels.Add(channel);
             }
             else
             {
                 // Someone has joined a channel we're already in
-                client.Channels[message.Parameters[0]].Users.Add(new IrcUser(message.Prefix));
+                channel = client.Channels[message.Parameters[0]];
+                channel.Users.Add(new IrcUser(message.Prefix));
             }
-            client.OnUserJoinedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]], new IrcUser(message.Prefix)));
+            if (channel != null)
+                client.OnUserJoinedChannel(new ChannelUserEventArgs(channel, new IrcUser(message.Prefix)));
         }
 
         public static void HandlePart(IrcClient client, IrcMessage message)
