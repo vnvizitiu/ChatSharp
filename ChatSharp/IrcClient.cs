@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using ChatSharp.Events;
 using System.Timers;
 using ChatSharp.Handlers;
+using System.Collections.Concurrent;
 
 namespace ChatSharp
 {
@@ -39,7 +40,7 @@ namespace ChatSharp
         private int ServerPort { get; set; }
         private Timer PingTimer { get; set; }
         private Socket Socket { get; set; }
-        private Queue<string> WriteQueue { get; set; }
+        private ConcurrentQueue<string> WriteQueue { get; set; }
         private bool IsWriting { get; set; }
 
         internal string ServerNameFromPing { get; set; }
@@ -87,7 +88,7 @@ namespace ChatSharp
             MessageHandlers.RegisterDefaultHandlers(this);
             RequestManager = new RequestManager();
             UseSSL = useSSL;
-            WriteQueue = new Queue<string>();
+            WriteQueue = new ConcurrentQueue<string>();
         }
 
         public void ConnectAsync()
@@ -103,6 +104,18 @@ namespace ChatSharp
                 if (!string.IsNullOrEmpty(ServerNameFromPing))
                     SendRawMessage("PING :{0}", ServerNameFromPing);
             };
+            var checkQueue = new Timer(1000);
+            checkQueue.Elapsed += (sender, e) =>
+            {
+                string nextMessage;
+                if (WriteQueue.Count > 0)
+                {
+                    Console.WriteLine("Sending queued messages (currently writing: {0})", IsWriting);
+                    while (!WriteQueue.TryDequeue(out nextMessage));
+                    SendRawMessage(nextMessage);
+                }
+            };
+            checkQueue.Start();
         }
 
         public void Quit()
@@ -215,11 +228,14 @@ namespace ChatSharp
 
             if (!IsWriting)
             {
-                NetworkStream.BeginWrite(data, 0, data.Length, MessageSent, message);
                 IsWriting = true;
+                NetworkStream.BeginWrite(data, 0, data.Length, MessageSent, message);
             }
             else
+            {
+                Console.WriteLine("Note: message queued for later delivery");
                 WriteQueue.Enqueue(message);
+            }
         }
 
         public void SendIrcMessage(IrcMessage message)
@@ -232,8 +248,10 @@ namespace ChatSharp
             if (NetworkStream == null)
             {
                 OnNetworkError(new SocketErrorEventArgs(SocketError.NotConnected));
+                IsWriting = false;
                 return;
             }
+            Console.WriteLine("TCP transmission complete");
 
             try
             {
@@ -248,13 +266,19 @@ namespace ChatSharp
                     throw;
                 return;
             }
-
-            IsWriting = false;
+            finally
+            {
+                IsWriting = false;
+            }
 
             OnRawMessageSent(new RawMessageEventArgs((string)result.AsyncState, true));
 
+            string nextMessage;
             if (WriteQueue.Count > 0)
-                SendRawMessage(WriteQueue.Dequeue());
+            {
+                while (!WriteQueue.TryDequeue(out nextMessage));
+                SendRawMessage(nextMessage);
+            }
         }
 
         public event EventHandler<SocketErrorEventArgs> NetworkError;

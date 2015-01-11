@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ChatSharp.Handlers
 {
@@ -75,6 +77,24 @@ namespace ChatSharp.Handlers
                 }
                 catch { }
             }
+            if (client.Settings.WhoIsOnJoin)
+            {
+                Task.Factory.StartNew(() => WhoIsChannel(channel, client, 0));
+            }
+        }
+
+        private static void WhoIsChannel(IrcChannel channel, IrcClient client, int index)
+        {
+            // Note: joins and parts that happen during this will cause strange behavior here
+            Thread.Sleep(client.Settings.JoinWhoIsDelay * 1000);
+            var user = channel.Users[index];
+            client.WhoIs(user.Nick, (whois) =>
+                {
+                    user.User = whois.User.User;
+                    user.Hostname = whois.User.Hostname;
+                    user.RealName = whois.User.RealName;
+                    Task.Factory.StartNew(() => WhoIsChannel(channel, client, index + 1));
+                });
         }
 
         public static void HandleKick(IrcClient client, IrcMessage message)

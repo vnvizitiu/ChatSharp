@@ -72,7 +72,19 @@ namespace ChatSharp.Handlers
             var eventArgs = new PrivateMessageEventArgs(message);
             client.OnPrivateMessageRecieved(eventArgs);
             if (eventArgs.PrivateMessage.IsChannelMessage)
+            {
+                try
+                {
+                    // Populate this user's hostname and user from the message
+                    // TODO: Merge all users from all channels into one list and keep references to which channels they're in
+                    var channel = client.Channels[eventArgs.PrivateMessage.Source];
+                    var u = channel.Users[eventArgs.PrivateMessage.User.Nick];
+                    u.Hostname = eventArgs.PrivateMessage.User.Hostname;
+                    u.User = eventArgs.PrivateMessage.User.User;
+                }
+                catch { /* silently ignored */ }
                 client.OnChannelMessageRecieved(eventArgs);
+            }
             else
                 client.OnUserMessageRecieved(eventArgs);
         }

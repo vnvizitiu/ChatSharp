@@ -10,8 +10,10 @@ namespace ChatSharp
         public ClientSettings()
         {
             WhoIsOnConnect = true;
+            WhoIsOnJoin = false;
             ModeOnJoin = true;
             GenerateRandomNickIfRefused = true;
+            JoinWhoIsDelay = 1;
         }
 
         /// <summary>
@@ -29,5 +31,14 @@ namespace ChatSharp
         /// If true, the library will generate a random nick with alphanumerical characters if it
         /// encounters a NICK error.
         public bool GenerateRandomNickIfRefused { get; set; }
+        /// <summary>
+        /// If true, the library will WHOIS everyone in a channel upon joining. This procedure can
+        /// take several minutes on larger channels.
+        /// </summary>
+        public bool WhoIsOnJoin { get; set; }
+        /// <summary>
+        /// The delay, in seconds, between each WHOIS when WhoIsOnJoin is true.
+        /// </summary>
+        public int JoinWhoIsDelay { get; set; }
     }
 }
