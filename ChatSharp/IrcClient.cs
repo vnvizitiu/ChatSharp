@@ -110,7 +110,6 @@ namespace ChatSharp
                 string nextMessage;
                 if (WriteQueue.Count > 0)
                 {
-                    Console.WriteLine("Sending queued messages (currently writing: {0})", IsWriting);
                     while (!WriteQueue.TryDequeue(out nextMessage));
                     SendRawMessage(nextMessage);
                 }
@@ -233,7 +232,6 @@ namespace ChatSharp
             }
             else
             {
-                Console.WriteLine("Note: message queued for later delivery");
                 WriteQueue.Enqueue(message);
             }
         }
@@ -251,7 +249,6 @@ namespace ChatSharp
                 IsWriting = false;
                 return;
             }
-            Console.WriteLine("TCP transmission complete");
 
             try
             {
