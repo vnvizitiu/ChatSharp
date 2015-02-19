@@ -363,5 +363,11 @@ namespace ChatSharp
         {
             if (UserKicked != null) UserKicked(this, e);
         }
+
+        public event EventHandler<WhoIsReceivedEventArgs> WhoIsReceived;
+        protected internal virtual void OnWhoIsReceived(WhoIsReceivedEventArgs e)
+        {
+            if (WhoIsReceived != null) WhoIsReceived(this, e);
+        }
     }
 }

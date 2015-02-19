@@ -31,6 +31,9 @@ namespace ChatSharp.Handlers
 
         public static void HandlePart(IrcClient client, IrcMessage message)
         {
+            if (!client.Channels.Contains(message.Parameters[0]))
+                return; // we already parted the channel, ignore
+
             if (client.User.Match(message.Prefix)) // We've parted this channel
                 client.Channels.Remove(client.Channels[message.Parameters[0]]);
             else // Someone has parted a channel we're already in
@@ -44,8 +47,8 @@ namespace ChatSharp.Handlers
                     if (mode.Value.Contains(user))
                         mode.Value.Remove(user);
                 }
+                client.OnUserPartedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]], new IrcUser(message.Prefix)));
             }
-            client.OnUserPartedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]], new IrcUser(message.Prefix)));
         }
 
         public static void HandleUserListPart(IrcClient client, IrcMessage message)

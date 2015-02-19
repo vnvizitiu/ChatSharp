@@ -41,6 +41,7 @@ namespace ChatSharp.Handlers
             client.SetHandler("317", UserHandlers.HandleWhoIsIdle);
             client.SetHandler("318", UserHandlers.HandleWhoIsEnd);
             client.SetHandler("319", UserHandlers.HandleWhoIsChannels);
+            client.SetHandler("330", UserHandlers.HandleWhoIsLoggedInAs);
 
             // Listing handlers
             client.SetHandler("367", ListingHandlers.HandleBanListPart);
