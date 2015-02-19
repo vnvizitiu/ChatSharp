@@ -16,6 +16,12 @@ namespace ChatSharp.Handlers
             whois.User.RealName = message.Parameters[5];
         }
 
+        public static void HandleWhoIsLoggedInAs(IrcClient client, IrcMessage message)
+        {
+            var whois = (WhoIs)client.RequestManager.PeekOperation("WHOIS " + message.Parameters[1]).State;
+            whois.LoggedInAs = message.Parameters[2];
+        }
+
         public static void HandleWhoIsServer(IrcClient client, IrcMessage message)
         {
             var whois = (WhoIs)client.RequestManager.PeekOperation("WHOIS " + message.Parameters[1]).State;
@@ -50,6 +56,7 @@ namespace ChatSharp.Handlers
             var request = client.RequestManager.DequeueOperation("WHOIS " + message.Parameters[1]);
             if (request.Callback != null)
                 request.Callback(request);
+            client.OnWhoIsReceived(new Events.WhoIsReceivedEventArgs((WhoIs) request.State));
         }
     }
 }

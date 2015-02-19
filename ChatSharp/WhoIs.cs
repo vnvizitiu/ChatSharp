@@ -20,5 +20,6 @@ namespace ChatSharp
         public int SecondsIdle { get; set; }
         public string Server { get; set; }
         public string ServerInfo { get; set; }
+        public string LoggedInAs { get; set; }
     }
 }
