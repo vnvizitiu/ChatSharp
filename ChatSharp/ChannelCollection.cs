@@ -51,7 +51,7 @@ namespace ChatSharp
         {
             get
             {
-                var channel = Channels.FirstOrDefault(c => c.Name == name.ToLower());
+                var channel = Channels.FirstOrDefault(c => string.Compare(c.Name, name, StringComparison.OrdinalIgnoreCase) == 0);
                 if (channel == null)
                     throw new KeyNotFoundException();
                 return channel;
