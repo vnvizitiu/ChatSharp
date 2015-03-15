@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ChatSharp.Events;
+using ChatSharp.Handlers;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
-using System.Text;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using ChatSharp.Events;
+using System.Text;
 using System.Timers;
-using ChatSharp.Handlers;
-using System.Collections.Concurrent;
 
 namespace ChatSharp
 {

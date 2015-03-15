@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ChatSharp.Events;
 using System.Linq;
-using System.Text;
-using ChatSharp.Events;
 
 namespace ChatSharp.Handlers
 {
