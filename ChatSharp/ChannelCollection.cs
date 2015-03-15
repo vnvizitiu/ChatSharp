@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ChatSharp
 {
@@ -51,7 +50,7 @@ namespace ChatSharp
         {
             get
             {
-                var channel = Channels.FirstOrDefault(c => string.Compare(c.Name, name, StringComparison.OrdinalIgnoreCase) == 0);
+                var channel = Channels.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
                 if (channel == null)
                     throw new KeyNotFoundException();
                 return channel;

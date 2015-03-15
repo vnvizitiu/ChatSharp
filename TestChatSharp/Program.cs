@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ChatSharp;
+using System;
 using System.Linq;
-using System.Text;
-using ChatSharp;
-using ChatSharp.Events;
 
 namespace TestChatSharp
 {

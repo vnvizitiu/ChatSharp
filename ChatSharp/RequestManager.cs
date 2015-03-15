@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ChatSharp
 {
@@ -23,7 +22,7 @@ namespace ChatSharp
 
         public RequestOperation PeekOperation(string key)
         {
-            var realKey = PendingOperations.Keys.FirstOrDefault(k => string.Compare(k, key, StringComparison.OrdinalIgnoreCase) == 0);
+            var realKey = PendingOperations.Keys.FirstOrDefault(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
             return PendingOperations[realKey];
         }
 
