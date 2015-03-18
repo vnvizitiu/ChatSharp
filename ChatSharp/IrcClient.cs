@@ -73,6 +73,7 @@ namespace ChatSharp
         public ClientSettings Settings { get; set; }
         public RequestManager RequestManager { get; set; }
         public ServerInfo ServerInfo { get; set; }
+        public string PrivmsgPrefix { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user, bool useSSL = false)
         {
@@ -89,6 +90,7 @@ namespace ChatSharp
             RequestManager = new RequestManager();
             UseSSL = useSSL;
             WriteQueue = new ConcurrentQueue<string>();
+            PrivmsgPrefix = "";
         }
 
         public void ConnectAsync()
