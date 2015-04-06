@@ -15,7 +15,6 @@ namespace ChatSharp
             }
             set
             {
-                Client.SetTopic(Name, value);
                 _Topic = value;
             }
         }
@@ -66,6 +65,12 @@ namespace ChatSharp
         public void ChangeMode(string change)
         {
             Client.ChangeMode(Name, change);
+        }
+
+        public void SetTopic(string topic)
+        {
+            Client.SetTopic(Name, topic);
+            Topic = topic;
         }
     }
 }

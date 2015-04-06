@@ -31,10 +31,29 @@ namespace TestChatSharp
                         var parts = e.PrivateMessage.Message.Split(' ');
                         client.ChangeMode(parts[1], parts[2]);
                     }
+                    else if (e.PrivateMessage.Message.StartsWith(".topic "))
+                    {
+                        string messageArgs = e.PrivateMessage.Message.Substring(7);
+                        if (messageArgs.Contains(" "))
+                        {
+                            string channel = messageArgs.Substring(0, messageArgs.IndexOf(" "));
+                            string topic = messageArgs.Substring(messageArgs.IndexOf(" ") + 1);
+                            client.Channels[channel].SetTopic(topic);
+                        }
+                        else
+                        {
+                            string channel = messageArgs.Substring(messageArgs.IndexOf("#"));
+                            client.GetTopic(channel);
+                        }
+                    }
                 };
             client.ChannelMessageRecieved += (s, e) =>
                 {
                     Console.WriteLine("<{0}> {1}", e.PrivateMessage.User.Nick, e.PrivateMessage.Message);
+                };
+            client.ChannelTopicReceived += (s, e) =>
+                {
+                    Console.WriteLine("Received topic for channel {0}: {1}", e.Channel.Name, e.Topic);
                 };
             client.ConnectAsync();
             while (true) ;
