@@ -27,6 +27,31 @@ namespace ChatSharp.Handlers
                 client.OnUserJoinedChannel(new ChannelUserEventArgs(channel, new IrcUser(message.Prefix)));
         }
 
+        public static void HandleGetTopic(IrcClient client, IrcMessage message)
+        {
+            IrcChannel channel = null;
+            string topic;
+            if (client.Channels.Contains(message.Parameters[1]))
+            {
+                channel = client.Channels[message.Parameters[1]];
+                topic = message.Parameters[2];
+                channel.Topic = topic;
+            }
+            else
+            {
+                channel = new IrcChannel(client, message.Parameters[1]);
+                topic = message.Parameters[2];
+            }
+            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, topic));
+        }
+
+        public static void HandleGetEmptyTopic(IrcClient client, IrcMessage message)
+        {
+            var channel = client.Channels[message.Parameters[1]];
+            var topic = message.Parameters[2];
+            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, topic));
+        }
+
         public static void HandlePart(IrcClient client, IrcMessage message)
         {
             if (!client.Channels.Contains(message.Parameters[0]))

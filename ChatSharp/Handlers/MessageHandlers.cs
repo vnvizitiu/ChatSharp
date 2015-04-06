@@ -28,6 +28,8 @@ namespace ChatSharp.Handlers
             // Channel handlers
             client.SetHandler("JOIN", ChannelHandlers.HandleJoin);
             client.SetHandler("PART", ChannelHandlers.HandlePart);
+            client.SetHandler("332", ChannelHandlers.HandleGetTopic);
+            client.SetHandler("331", ChannelHandlers.HandleGetEmptyTopic);
             client.SetHandler("353", ChannelHandlers.HandleUserListPart);
             client.SetHandler("366", ChannelHandlers.HandleUserListEnd);
             client.SetHandler("KICK", ChannelHandlers.HandleKick);

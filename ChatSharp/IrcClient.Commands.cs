@@ -59,6 +59,11 @@ namespace ChatSharp
             SendRawMessage("TOPIC {0} :{1}", channel, topic);
         }
 
+        public void GetTopic(string channel)
+        {
+            SendRawMessage("TOPIC {0}", channel);
+        }
+
         public void KickUser(string channel, string user)
         {
             SendRawMessage("KICK {0} {1} :{1}", channel, user);

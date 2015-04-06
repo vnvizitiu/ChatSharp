@@ -350,6 +350,11 @@ namespace ChatSharp
         {
             if (ChannelListRecieved != null) ChannelListRecieved(this, e);
         }
+        public event EventHandler<ChannelTopicEventArgs> ChannelTopicReceived;
+        protected internal virtual void OnChannelTopicReceived(ChannelTopicEventArgs e)
+        {
+            if (ChannelTopicReceived != null) ChannelTopicReceived(this, e);
+        }
         public event EventHandler<EventArgs> ConnectionComplete;
         protected internal virtual void OnConnectionComplete(EventArgs e)
         {
