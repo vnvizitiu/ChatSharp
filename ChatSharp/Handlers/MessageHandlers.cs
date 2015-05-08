@@ -24,6 +24,7 @@ namespace ChatSharp.Handlers
             client.SetHandler("375", MOTDHandlers.HandleMOTDStart);
             client.SetHandler("372", MOTDHandlers.HandleMOTD);
             client.SetHandler("376", MOTDHandlers.HandleEndOfMOTD);
+            client.SetHandler("422", MOTDHandlers.HandleMOTDNotFound);
 
             // Channel handlers
             client.SetHandler("JOIN", ChannelHandlers.HandleJoin);
