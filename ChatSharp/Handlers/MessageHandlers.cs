@@ -107,7 +107,7 @@ namespace ChatSharp.Handlers
 
         public static void HandlePrivmsg(IrcClient client, IrcMessage message)
         {
-            var eventArgs = new PrivateMessageEventArgs(message);
+            var eventArgs = new PrivateMessageEventArgs(message, client.ServerInfo);
             client.OnPrivateMessageRecieved(eventArgs);
             if (eventArgs.PrivateMessage.IsChannelMessage)
             {

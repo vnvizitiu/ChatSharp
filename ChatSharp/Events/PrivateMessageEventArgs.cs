@@ -7,10 +7,10 @@ namespace ChatSharp.Events
         public IrcMessage IrcMessage { get; set; }
         public PrivateMessage PrivateMessage { get; set; }
 
-        public PrivateMessageEventArgs(IrcMessage ircMessage)
+        public PrivateMessageEventArgs(IrcMessage ircMessage, ServerInfo serverInfo)
         {
             IrcMessage = ircMessage;
-            PrivateMessage = new PrivateMessage(IrcMessage);
+            PrivateMessage = new PrivateMessage(IrcMessage, serverInfo);
         }
     }
 }

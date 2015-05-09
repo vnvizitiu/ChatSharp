@@ -1,14 +1,16 @@
-﻿namespace ChatSharp
+﻿using System.Linq;
+
+namespace ChatSharp
 {
     public class PrivateMessage
     {
-        public PrivateMessage(IrcMessage message)
+        public PrivateMessage(IrcMessage message, ServerInfo serverInfo)
         {
             Source = message.Parameters[0];
             Message = message.Parameters[1];
 
             User = new IrcUser(message.Prefix);
-            if (Source.StartsWith("#"))
+            if (serverInfo.ChannelTypes.Any(c => Source.StartsWith(c.ToString())))
                 IsChannelMessage = true;
             else
                 Source = User.Nick;
