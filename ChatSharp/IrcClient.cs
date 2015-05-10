@@ -99,7 +99,6 @@ namespace ChatSharp
             Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             ReadBuffer = new byte[ReadBufferLength];
             ReadBufferIndex = 0;
-            Socket.BeginConnect(ServerHostname, ServerPort, ConnectComplete, null);
             PingTimer = new Timer(30000);
             PingTimer.Elapsed += (sender, e) => 
             {
@@ -117,6 +116,7 @@ namespace ChatSharp
                 }
             };
             checkQueue.Start();
+            Socket.BeginConnect(ServerHostname, ServerPort, ConnectComplete, null);
         }
 
         public void Quit()
