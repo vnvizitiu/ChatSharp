@@ -72,6 +72,7 @@
     <Compile Include="UserCollection.cs" />
     <Compile Include="WhoIs.cs" />
     <Compile Include="Events\KickEventArgs.cs" />
+    <Compile Include="Events\NickChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

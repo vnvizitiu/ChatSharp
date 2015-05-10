@@ -376,5 +376,11 @@ namespace ChatSharp
         {
             if (WhoIsReceived != null) WhoIsReceived(this, e);
         }
+
+        public event EventHandler<NickChangedEventArgs> NickChanged;
+        protected internal virtual void OnNickChanged(NickChangedEventArgs e)
+        {
+            if (NickChanged != null) NickChanged(this, e);
+        }
     }
 }

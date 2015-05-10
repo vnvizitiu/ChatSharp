@@ -61,10 +61,17 @@ namespace ChatSharp.Handlers
 
         public static void HandleNick(IrcClient client, IrcMessage message)
         {
-            if (client.User.Nick == new IrcUser(message.Prefix).Nick)
+            var u = new IrcUser(message.Prefix);
+            if (client.User.Nick == u.Nick)
             {
                 client.User.Nick = message.Parameters[0];
             }
+            client.OnNickChanged(new NickChangedEventArgs
+            {
+                User = u,
+                OldNick = u.Nick,
+                NewNick = message.Parameters[0]
+            });
         }
 
         public static void HandleQuit(IrcClient client, IrcMessage message)
