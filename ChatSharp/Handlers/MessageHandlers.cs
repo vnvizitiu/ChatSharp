@@ -1,5 +1,6 @@
 ﻿using ChatSharp.Events;
 using System.Linq;
+using System;
 
 namespace ChatSharp.Handlers
 {
@@ -61,15 +62,30 @@ namespace ChatSharp.Handlers
 
         public static void HandleNick(IrcClient client, IrcMessage message)
         {
-            var u = new IrcUser(message.Prefix);
-            if (client.User.Nick == u.Nick)
+            var ircUser = new IrcUser(message.Prefix);
+
+            var oldNick = ircUser.Nick;
+            var users = client
+                    .Channels
+                    .SelectMany(c => c.Users.Where(u => u.Nick.Equals(ircUser.Nick, StringComparison.OrdinalIgnoreCase)));
+
+            foreach (var user in users)
+            {
+                if (user != null)
+                {
+                    user.Nick = message.Parameters[0];
+                }
+            }
+
+            if (client.User.Nick.Equals(ircUser.Nick, System.StringComparison.OrdinalIgnoreCase))
             {
                 client.User.Nick = message.Parameters[0];
             }
+
             client.OnNickChanged(new NickChangedEventArgs
             {
-                User = u,
-                OldNick = u.Nick,
+                User = ircUser,
+                OldNick = oldNick,
                 NewNick = message.Parameters[0]
             });
         }

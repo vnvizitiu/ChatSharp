@@ -130,7 +130,7 @@ namespace ChatSharp.Handlers
         {
             var channel = client.Channels[message.Parameters[0]];
             var kicked = channel.Users[message.Parameters[1]];
-            if (message.Parameters[1] == client.User.Nick) // We've been kicked
+            if (string.Equals(message.Parameters[1], client.User.Nick, StringComparison.OrdinalIgnoreCase)) // We've been kicked
                 client.Channels.Remove(client.Channels[message.Parameters[0]]);
             else
             {
