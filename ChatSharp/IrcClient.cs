@@ -1,4 +1,4 @@
-﻿using ChatSharp.Events;
+using ChatSharp.Events;
 using ChatSharp.Handlers;
 using System;
 using System.Collections.Concurrent;

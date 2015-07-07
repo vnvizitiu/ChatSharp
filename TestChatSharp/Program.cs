@@ -1,4 +1,4 @@
-﻿using ChatSharp;
+using ChatSharp;
 using System;
 using System.Linq;
 

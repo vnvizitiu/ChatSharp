@@ -1,4 +1,4 @@
-﻿namespace ChatSharp.Handlers
+namespace ChatSharp.Handlers
 {
     internal static class ListingHandlers
     {

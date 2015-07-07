@@ -1,4 +1,4 @@
-﻿using ChatSharp.Events;
+using ChatSharp.Events;
 using System;
 using System.Linq;
 using System.Threading;

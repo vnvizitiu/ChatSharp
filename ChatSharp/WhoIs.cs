@@ -1,4 +1,4 @@
-﻿namespace ChatSharp
+namespace ChatSharp
 {
     public class WhoIs
     {
