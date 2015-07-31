@@ -24,6 +24,7 @@ namespace ChatSharp
         public string Name { get; internal set; }
         public string Mode { get; internal set; }
         public UserPoolView Users { get; private set; }
+        public Dictionary<char?, UserPoolView> UsersByMode { get; set; }
 
         internal IrcChannel(IrcClient client, string name)
         {

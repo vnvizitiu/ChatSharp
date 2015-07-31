@@ -4,12 +4,12 @@ namespace ChatSharp
 {
     public class PrivateMessage
     {
-        public PrivateMessage(IrcMessage message, ServerInfo serverInfo)
+        public PrivateMessage(IrcClient client, IrcMessage message, ServerInfo serverInfo)
         {
             Source = message.Parameters[0];
             Message = message.Parameters[1];
 
-            User = new IrcUser(message.Prefix);
+            User = client.Users.GetOrAdd(message.Prefix);
             if (serverInfo.ChannelTypes.Any(c => Source.StartsWith(c.ToString())))
                 IsChannelMessage = true;
             else

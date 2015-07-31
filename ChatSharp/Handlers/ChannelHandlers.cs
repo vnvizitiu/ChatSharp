@@ -60,15 +60,19 @@ namespace ChatSharp.Handlers
                 {
                     var user = client.Users.GetOrAdd(nick);
                     user.Channels.Add(channel);
+                    if (!user.ChannelModes.ContainsKey(channel))
+                        user.ChannelModes.Add(channel, null);
+                    else
+                        user.ChannelModes[channel] = null;
                 }
                 else
                 {
                     var user = client.Users.GetOrAdd(nick.Substring(1));
                     user.Channels.Add(channel);
-                    // TODO: User modes
-                    /*if (!channel.UsersByMode.ContainsKey(mode.Value))
-                        channel.UsersByMode.Add(mode.Value, new UserCollection());
-                    channel.UsersByMode[mode.Value].Add(new IrcUser(nick.Substring(1)));*/
+                    if (!user.ChannelModes.ContainsKey(channel))
+                        user.ChannelModes.Add(channel, mode.Value);
+                    else
+                        user.ChannelModes[channel] = mode.Value;
                 }
             }
         }
@@ -109,13 +113,8 @@ namespace ChatSharp.Handlers
         {
             var channel = client.Channels[message.Parameters[0]];
             var kicked = channel.Users[message.Parameters[1]];
-            if (string.Equals(message.Parameters[1], client.User.Nick, StringComparison.OrdinalIgnoreCase)) // We've been kicked
-                client.Channels.Remove(client.Channels[message.Parameters[0]]);
-            else
-            {
-                if (kicked.Channels.Contains(channel))
-                    kicked.Channels.Remove(channel);
-            }
+            if (kicked.Channels.Contains(channel))
+                kicked.Channels.Remove(channel);
             client.OnUserKicked(new KickEventArgs(channel, new IrcUser(message.Prefix),
                 kicked, message.Parameters[2]));
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ChatSharp
 {
@@ -55,6 +56,8 @@ namespace ChatSharp
         public string RealName { get; internal set; }
         public string Hostname { get; internal set; }
         public ChannelCollection Channels { get; set; }
+
+        internal Dictionary<IrcChannel, char?> ChannelModes { get; set; }
 
         public string Hostmask
         {
@@ -127,11 +130,5 @@ namespace ChatSharp
         {
             return Hostmask;
         }
-    }
-
-    internal class UserChannel
-    {
-        public string Modes { get; set; }
-        public IrcChannel Channel { get; set; }
     }
 }

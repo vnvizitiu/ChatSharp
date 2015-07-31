@@ -61,7 +61,14 @@ namespace ChatSharp
         {
             var user = new IrcUser(prefix);
             if (Contains(user.Nick))
-                return this[user.Nick];
+            {
+                var ret = this[user.Nick];
+                if (string.IsNullOrEmpty(ret.User) && !string.IsNullOrEmpty(user.User))
+                    ret.User = user.User;
+                if (string.IsNullOrEmpty(ret.Hostname) && !string.IsNullOrEmpty(user.Hostname))
+                    ret.Hostname = user.Hostname;
+                return ret;
+            }
             Add(user);
             return user;
         }

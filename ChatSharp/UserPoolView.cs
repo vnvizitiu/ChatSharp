@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ChatSharp
 {
-    public class UserPoolView
+    public class UserPoolView : IEnumerable<IrcUser>
     {
         private UserPool Pool { get; set; }
         private IEnumerable<IrcUser> Users { get; set; }
@@ -46,6 +46,16 @@ namespace ChatSharp
         public bool Contains(IrcUser user)
         {
             return Users.Any(u => u.Hostmask == user.Hostmask);
+        }
+
+        public IEnumerator<IrcUser> GetEnumerator()
+        {
+            return Users.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }
