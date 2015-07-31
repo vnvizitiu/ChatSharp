@@ -4,7 +4,7 @@ A C# library for chatting on an IRC (Internet Relay Protocol) network.
 
 Supports a lot of RFC 1459 and a little of 2812.
 
-## Example
+## Example Usage
 
 ```csharp
 
