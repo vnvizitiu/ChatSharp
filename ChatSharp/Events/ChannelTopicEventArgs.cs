@@ -6,11 +6,13 @@ namespace ChatSharp.Events
     {
         public IrcChannel Channel { get; set; }
         public string Topic { get; set; }
+        public string OldTopic { get; set; }
 
-        public ChannelTopicEventArgs(IrcChannel channel, string topic)
+        public ChannelTopicEventArgs(IrcChannel channel, string oldTopic, string topic)
         {
             Channel = channel;
             Topic = topic;
+            OldTopic = oldTopic;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ChatSharp
 {
@@ -15,21 +16,20 @@ namespace ChatSharp
             }
             set
             {
+                Client.SetTopic(Name, value);
                 _Topic = value;
             }
         }
 
         public string Name { get; internal set; }
         public string Mode { get; internal set; }
-        public UserCollection Users { get; set; }
-        public Dictionary<char, UserCollection> UsersByMode { get; set; }
+        public UserPoolView Users { get; private set; }
 
         internal IrcChannel(IrcClient client, string name)
         {
             Client = client;
-            Users = new UserCollection();
-            UsersByMode = new Dictionary<char, UserCollection>();
             Name = name;
+            Users = new UserPoolView(client.Users.Where(u => u.Channels.Contains(this)));
         }
 
         public void Invite(string nick)
@@ -54,7 +54,7 @@ namespace ChatSharp
 
         public void Part(string reason)
         {
-            Client.PartChannel(Name);
+            Client.PartChannel(Name); // TODO
         }
 
         public void SendMessage(string message)
@@ -65,12 +65,6 @@ namespace ChatSharp
         public void ChangeMode(string change)
         {
             Client.ChangeMode(Name, change);
-        }
-
-        public void SetTopic(string topic)
-        {
-            Client.SetTopic(Name, topic);
-            Topic = topic;
         }
     }
 }

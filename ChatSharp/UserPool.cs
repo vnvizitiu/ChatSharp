@@ -1,17 +1,28 @@
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ChatSharp
 {
-    public class UserCollection : IEnumerable<IrcUser>
+    public class UserPool : IEnumerable<IrcUser>
     {
-        internal UserCollection()
+        private List<IrcUser> Users { get; set; }
+
+        internal UserPool()
         {
             Users = new List<IrcUser>();
         }
-        
-        private List<IrcUser> Users { get; set; }
+
+        public IrcUser this[string nick]
+        {
+            get
+            {
+                var user = Users.FirstOrDefault(u => u.Nick == nick);
+                if (user == null)
+                    throw new KeyNotFoundException();
+                return user;
+            }
+        }
 
         internal void Add(IrcUser user)
         {
@@ -46,23 +57,21 @@ namespace ChatSharp
             return Users.Any(u => u.Hostmask == user.Hostmask);
         }
 
-        public IrcUser this[int index]
+        internal IrcUser GetOrAdd(string prefix)
         {
-            get
-            {
-                return Users[index];
-            }
+            var user = new IrcUser(prefix);
+            if (Contains(user.Nick))
+                return this[user.Nick];
+            Add(user);
+            return user;
         }
 
-        public IrcUser this[string nick]
+        internal IrcUser Get(string prefix)
         {
-            get
-            {
-                var user = Users.FirstOrDefault(u => u.Nick == nick);
-                if (user == null)
-                    throw new KeyNotFoundException();
-                return user;
-            }
+            var user = new IrcUser(prefix);
+            if (Contains(user.Nick))
+                return this[user.Nick];
+            throw new KeyNotFoundException();
         }
 
         public IEnumerator<IrcUser> GetEnumerator()
@@ -70,7 +79,7 @@ namespace ChatSharp
             return Users.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

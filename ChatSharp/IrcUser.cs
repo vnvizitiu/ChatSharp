@@ -7,9 +7,10 @@ namespace ChatSharp
     {
         internal IrcUser()
         {
+            Channels = new ChannelCollection();
         }
 
-        public IrcUser(string host)
+        public IrcUser(string host) : this()
         {
             if (!host.Contains("@") && !host.Contains("!"))
                 Nick = host;
@@ -29,7 +30,7 @@ namespace ChatSharp
             }
         }
 
-        public IrcUser(string nick, string user)
+        public IrcUser(string nick, string user) : this()
         {
             Nick = nick;
             User = user;
@@ -53,6 +54,7 @@ namespace ChatSharp
         public string Mode { get; internal set; }
         public string RealName { get; internal set; }
         public string Hostname { get; internal set; }
+        public ChannelCollection Channels { get; set; }
 
         public string Hostmask
         {
@@ -125,5 +127,11 @@ namespace ChatSharp
         {
             return Hostmask;
         }
+    }
+
+    internal class UserChannel
+    {
+        public string Modes { get; set; }
+        public IrcChannel Channel { get; set; }
     }
 }

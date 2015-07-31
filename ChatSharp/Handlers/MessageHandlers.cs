@@ -62,29 +62,13 @@ namespace ChatSharp.Handlers
 
         public static void HandleNick(IrcClient client, IrcMessage message)
         {
-            var ircUser = new IrcUser(message.Prefix);
-
-            var oldNick = ircUser.Nick;
-            var users = client
-                    .Channels
-                    .SelectMany(c => c.Users.Where(u => u.Nick.Equals(ircUser.Nick, StringComparison.OrdinalIgnoreCase)));
-
-            foreach (var user in users)
-            {
-                if (user != null)
-                {
-                    user.Nick = message.Parameters[0];
-                }
-            }
-
-            if (client.User.Nick.Equals(ircUser.Nick, System.StringComparison.OrdinalIgnoreCase))
-            {
-                client.User.Nick = message.Parameters[0];
-            }
+            var user = client.Users.Get(message.Prefix);
+            var oldNick = user.Nick;
+            user.Nick = message.Parameters[0];
 
             client.OnNickChanged(new NickChangedEventArgs
             {
-                User = ircUser,
+                User = user,
                 OldNick = oldNick,
                 NewNick = message.Parameters[0]
             });
@@ -95,25 +79,8 @@ namespace ChatSharp.Handlers
             var user = new IrcUser(message.Prefix);
             if (client.User.Nick != user.Nick)
             {
-                var channels = client
-                                .Channels
-                                .Where(c => c.Users.Any(u => u.Nick.Equals(user.Nick)));
-                var users = channels
-                    .SelectMany(c=> c.UsersByMode)
-                    .Where(m => m.Value.Contains(user.Nick))
-                    .Select(c => c.Value);
-
-                foreach (var userCollection in users)
-                {
-                    userCollection.Remove(user.Nick);
-                }
-
-                foreach (var channel in channels)
-                {
-                    channel.Users.Remove(user.Nick);
-                }
-
-
+                client.Users.Remove(user);
+                client.OnUserQuit(new UserEventArgs(user));
             }
         }
 
@@ -209,6 +176,7 @@ namespace ChatSharp.Handlers
                         }
                         else if (client.ServerInfo.SupportedChannelModes.ChannelUserModes.Contains(c))
                         {
+                            /*
                             if (!channel.UsersByMode.ContainsKey(c)) channel.UsersByMode.Add(c, new UserCollection());
                             var user = new IrcUser(message.Parameters[i]);
                             if (add)
@@ -221,6 +189,7 @@ namespace ChatSharp.Handlers
                                 if (channel.UsersByMode[c].Contains(user.Nick))
                                     channel.UsersByMode[c].Remove(user);
                             }
+                            */
                             client.OnModeChanged(new ModeChangeEventArgs(channel.Name, new IrcUser(message.Prefix), 
                                 (add ? "+" : "-") + c.ToString() + " " + message.Parameters[i++]));
                         }

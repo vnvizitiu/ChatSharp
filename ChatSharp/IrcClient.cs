@@ -74,6 +74,7 @@ namespace ChatSharp
         public RequestManager RequestManager { get; set; }
         public ServerInfo ServerInfo { get; set; }
         public string PrivmsgPrefix { get; set; }
+        public UserPool Users { get; set; }
 
         public IrcClient(string serverAddress, IrcUser user, bool useSSL = false)
         {
@@ -91,6 +92,8 @@ namespace ChatSharp
             UseSSL = useSSL;
             WriteQueue = new ConcurrentQueue<string>();
             PrivmsgPrefix = "";
+            Users = new UserPool();
+            Users.Add(User); // Add self to user pool
         }
 
         public void ConnectAsync()
@@ -370,17 +373,20 @@ namespace ChatSharp
         {
             if (UserKicked != null) UserKicked(this, e);
         }
-
         public event EventHandler<WhoIsReceivedEventArgs> WhoIsReceived;
         protected internal virtual void OnWhoIsReceived(WhoIsReceivedEventArgs e)
         {
             if (WhoIsReceived != null) WhoIsReceived(this, e);
         }
-
         public event EventHandler<NickChangedEventArgs> NickChanged;
         protected internal virtual void OnNickChanged(NickChangedEventArgs e)
         {
             if (NickChanged != null) NickChanged(this, e);
+        }
+        public event EventHandler<UserEventArgs> UserQuit;
+        protected internal virtual void OnUserQuit(UserEventArgs e)
+        {
+            if (UserQuit != null) UserQuit(this, e);
         }
     }
 }

@@ -10,86 +10,65 @@ namespace ChatSharp.Handlers
     {
         public static void HandleJoin(IrcClient client, IrcMessage message)
         {
-            IrcChannel channel = null;
-            if (client.User.Nick == new IrcUser(message.Prefix).Nick)
-            {
-                // We've joined this channel
-                channel = new IrcChannel(client, message.Parameters[0]);
-                client.Channels.Add(channel);
-            }
-            else
-            {
-                // Someone has joined a channel we're already in
-                channel = client.Channels[message.Parameters[0]];
-                channel.Users.Add(new IrcUser(message.Prefix));
-            }
+            var channel = client.Channels.GetOrAdd(message.Parameters[0]);
+            var user = client.Users.GetOrAdd(message.Prefix);
+            user.Channels.Add(channel);
             if (channel != null)
                 client.OnUserJoinedChannel(new ChannelUserEventArgs(channel, new IrcUser(message.Prefix)));
         }
 
         public static void HandleGetTopic(IrcClient client, IrcMessage message)
         {
-            IrcChannel channel = null;
-            string topic;
-            if (client.Channels.Contains(message.Parameters[1]))
-            {
-                channel = client.Channels[message.Parameters[1]];
-                topic = message.Parameters[2];
-                channel.Topic = topic;
-            }
-            else
-            {
-                channel = new IrcChannel(client, message.Parameters[1]);
-                topic = message.Parameters[2];
-            }
-            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, topic));
+            var channel = client.Channels.GetOrAdd(message.Parameters[1]);
+            var old = channel._Topic;
+            channel._Topic = message.Parameters[2];
+            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, old, channel._Topic));
         }
 
         public static void HandleGetEmptyTopic(IrcClient client, IrcMessage message)
         {
-            var channel = client.Channels[message.Parameters[1]];
-            var topic = message.Parameters[2];
-            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, topic));
+            var channel = client.Channels.GetOrAdd(message.Parameters[1]);
+            var old = channel._Topic;
+            channel._Topic = message.Parameters[2];
+            client.OnChannelTopicReceived(new ChannelTopicEventArgs(channel, old, channel._Topic));
         }
 
         public static void HandlePart(IrcClient client, IrcMessage message)
         {
             if (!client.Channels.Contains(message.Parameters[0]))
-                return; // we already parted the channel, ignore
+                return; // we aren't in this channel, ignore
 
-            if (client.User.Match(message.Prefix)) // We've parted this channel
-                client.Channels.Remove(client.Channels[message.Parameters[0]]);
-            else // Someone has parted a channel we're already in
-            {
-                var user = new IrcUser(message.Prefix).Nick;
-                var channel = client.Channels[message.Parameters[0]];
-                if (channel.Users.Contains(user))
-                    channel.Users.Remove(user);
-                foreach (var mode in channel.UsersByMode)
-                {
-                    if (mode.Value.Contains(user))
-                        mode.Value.Remove(user);
-                }
-                client.OnUserPartedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]], new IrcUser(message.Prefix)));
-            }
+            var user = client.Users.Get(message.Prefix);
+            var channel = client.Channels[message.Parameters[0]];
+
+            if (user.Channels.Contains(channel))
+                user.Channels.Remove(channel);
+            client.OnUserPartedChannel(new ChannelUserEventArgs(client.Channels[message.Parameters[0]],
+                new IrcUser(message.Prefix)));
         }
 
         public static void HandleUserListPart(IrcClient client, IrcMessage message)
         {
             var channel = client.Channels[message.Parameters[2]];
-            var users = message.Parameters[3].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var user in users)
+            var users = message.Parameters[3].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var nick in users)
             {
-                if (string.IsNullOrWhiteSpace(user)) continue;
-                var mode = client.ServerInfo.GetModeForPrefix(user[0]);
+                if (string.IsNullOrWhiteSpace(nick))
+                    continue;
+                var mode = client.ServerInfo.GetModeForPrefix(nick[0]);
                 if (mode == null)
-                    channel.Users.Add(new IrcUser(user));
+                {
+                    var user = client.Users.GetOrAdd(nick);
+                    user.Channels.Add(channel);
+                }
                 else
                 {
-                    channel.Users.Add(new IrcUser(user.Substring(1)));
-                    if (!channel.UsersByMode.ContainsKey(mode.Value))
+                    var user = client.Users.GetOrAdd(nick.Substring(1));
+                    user.Channels.Add(channel);
+                    // TODO: User modes
+                    /*if (!channel.UsersByMode.ContainsKey(mode.Value))
                         channel.UsersByMode.Add(mode.Value, new UserCollection());
-                    channel.UsersByMode[mode.Value].Add(new IrcUser(user.Substring(1)));
+                    channel.UsersByMode[mode.Value].Add(new IrcUser(nick.Substring(1)));*/
                 }
             }
         }
@@ -102,9 +81,9 @@ namespace ChatSharp.Handlers
             {
                 try
                 {
-                    client.GetMode(channel.Name, c => Console.WriteLine(c.Mode));
+                    client.GetMode(channel.Name, c => { /* no-op */ });
                 }
-                catch { }
+                catch { /* who cares */ }
             }
             if (client.Settings.WhoIsOnJoin)
             {
@@ -134,12 +113,8 @@ namespace ChatSharp.Handlers
                 client.Channels.Remove(client.Channels[message.Parameters[0]]);
             else
             {
-                if (channel.Users.Contains(message.Parameters[1]))
-                    channel.Users.Remove(message.Parameters[1]);
-                foreach (var mode in channel.UsersByMode.Where(mode => mode.Value.Contains(message.Parameters[1])))
-                {
-                    mode.Value.Remove(message.Parameters[1]);
-                }
+                if (kicked.Channels.Contains(channel))
+                    kicked.Channels.Remove(channel);
             }
             client.OnUserKicked(new KickEventArgs(channel, new IrcUser(message.Prefix),
                 kicked, message.Parameters[2]));

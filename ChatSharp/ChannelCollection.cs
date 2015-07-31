@@ -7,9 +7,13 @@ namespace ChatSharp
 {
     public class ChannelCollection : IEnumerable<IrcChannel>
     {
-        internal ChannelCollection(IrcClient client)
+        internal ChannelCollection()
         {
             Channels = new List<IrcChannel>();
+        }
+
+        internal ChannelCollection(IrcClient client) : this()
+        {
             Client = client;
         }
 
@@ -30,7 +34,10 @@ namespace ChatSharp
 
         public void Join(string name)
         {
-            Client.JoinChannel(name);
+            if (Client != null)
+                Client.JoinChannel(name);
+            else
+                throw new InvalidOperationException("Cannot make other users join channels.");
         }
 
         public bool Contains(string name)
@@ -55,6 +62,15 @@ namespace ChatSharp
                     throw new KeyNotFoundException();
                 return channel;
             }
+        }
+
+        internal IrcChannel GetOrAdd(string name)
+        {
+            if (this.Contains(name))
+                return this[name];
+            var channel = new IrcChannel(Client, name);
+            this.Add(channel);
+            return channel;
         }
 
         public IEnumerator<IrcChannel> GetEnumerator()
