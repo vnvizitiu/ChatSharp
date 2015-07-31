@@ -59,6 +59,8 @@ namespace ChatSharp.Handlers
                 if (mode == null)
                 {
                     var user = client.Users.GetOrAdd(nick);
+                    if (!user.Channels.Contains(channel))
+                        user.Channels.Add(channel);
                     if (!user.ChannelModes.ContainsKey(channel))
                         user.ChannelModes.Add(channel, null);
                     else
@@ -67,6 +69,8 @@ namespace ChatSharp.Handlers
                 else
                 {
                     var user = client.Users.GetOrAdd(nick.Substring(1));
+                    if (!user.Channels.Contains(channel))
+                        user.Channels.Add(channel);
                     if (!user.ChannelModes.ContainsKey(channel))
                         user.ChannelModes.Add(channel, mode.Value);
                     else

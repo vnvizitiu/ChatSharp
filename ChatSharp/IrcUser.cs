@@ -9,6 +9,7 @@ namespace ChatSharp
         internal IrcUser()
         {
             Channels = new ChannelCollection();
+            ChannelModes = new Dictionary<IrcChannel, char?>();
         }
 
         public IrcUser(string host) : this()
