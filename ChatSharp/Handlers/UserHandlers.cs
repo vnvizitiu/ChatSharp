@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ChatSharp.Handlers
 {
-    public static class UserHandlers
+    internal static class UserHandlers
     {
         public static void HandleWhoIsUser(IrcClient client, IrcMessage message)
         {

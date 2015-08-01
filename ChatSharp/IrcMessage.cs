@@ -3,13 +3,32 @@ using System.Linq;
 
 namespace ChatSharp
 {
+    /// <summary>
+    /// Represents a raw IRC message. This is a low-level construct - PrivateMessage is used
+    /// to represent messages sent from users.
+    /// </summary>
     public class IrcMessage
     {
+        /// <summary>
+        /// The unparsed message.
+        /// </summary>
         public string RawMessage { get; private set; }
+        /// <summary>
+        /// The message prefix.
+        /// </summary>
         public string Prefix { get; private set; }
+        /// <summary>
+        /// The message command.
+        /// </summary>
         public string Command { get; private set; }
+        /// <summary>
+        /// Additional parameters supplied with the message.
+        /// </summary>
         public string[] Parameters { get; private set; }
 
+        /// <summary>
+        /// Initializes and decodes an IRC message, given the raw message from the server.
+        /// </summary>
         public IrcMessage(string rawMessage)
         {
             RawMessage = rawMessage;

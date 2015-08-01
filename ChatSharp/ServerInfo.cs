@@ -1,8 +1,11 @@
 namespace ChatSharp
 {
+    /// <summary>
+    /// Information provided by the server about its featureset.
+    /// </summary>
     public class ServerInfo
     {
-        public ServerInfo()
+        internal ServerInfo()
         {
             // Guess for some defaults
             Prefixes = new[] { "ov", "@+" };
@@ -82,6 +85,9 @@ namespace ChatSharp
         /// </summary>
         public int? MaxAwayLength { get; set; }
 
+        /// <summary>
+        /// Modes a server supports that are applicable to channels.
+        /// </summary>
         public class ChannelModes
         {
             internal ChannelModes()
@@ -94,13 +100,31 @@ namespace ChatSharp
                 ChannelUserModes = "vo"; // I have no idea what I'm doing here
             }
 
+            /// <summary>
+            /// Modes that are used for lists (i.e. bans).
+            /// </summary>
             public string ChannelLists { get; internal set; }
+            /// <summary>
+            /// Modes that can be set on a user of a channel (i.e. ops, voice, etc).
+            /// </summary>
             public string ChannelUserModes { get; set; }
+            /// <summary>
+            /// Modes that take a parameter (i.e. +k).
+            /// </summary>
             public string ParameterizedSettings { get; internal set; }
+            /// <summary>
+            /// Modes that take an optional parameter (i.e. +f).
+            /// </summary>
             public string OptionallyParameterizedSettings { get; internal set; }
+            /// <summary>
+            /// Modes that change channel settings.
+            /// </summary>
             public string Settings { get; internal set; }
         }
 
+        /// <summary>
+        /// Limits imposed on channel lists, such as the maximum bans per channel.
+        /// </summary>
         public class ModeListLimit
         {
             internal ModeListLimit(char mode, int maximum)
@@ -109,7 +133,13 @@ namespace ChatSharp
                 Maximum = maximum;
             }
 
+            /// <summary>
+            /// The mode character this applies to (i.e. 'b')
+            /// </summary>
             public char Mode { get; internal set; }
+            /// <summary>
+            /// The maximum entries for this list.
+            /// </summary>
             public int Maximum { get; internal set; }
         }
     }

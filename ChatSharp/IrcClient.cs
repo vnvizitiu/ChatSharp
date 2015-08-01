@@ -11,10 +11,21 @@ using System.Timers;
 
 namespace ChatSharp
 {
-    public partial class IrcClient
+    /// <summary>
+    /// An IRC client.
+    /// </summary>
+    public sealed partial class IrcClient
     {
+        /// <summary>
+        /// A raw IRC message handler.
+        /// </summary>
         public delegate void MessageHandler(IrcClient client, IrcMessage message);
         private Dictionary<string, MessageHandler> Handlers { get; set; }
+
+        /// <summary>
+        /// Sets a custom handler for an IRC message. This applies to the low level IRC protocol,
+        /// not for private messages.
+        /// </summary>
         public void SetHandler(string message, MessageHandler handler)
         {
 #if DEBUG
@@ -43,8 +54,14 @@ namespace ChatSharp
         private ConcurrentQueue<string> WriteQueue { get; set; }
         private bool IsWriting { get; set; }
 
+        internal RequestManager RequestManager { get; set; }
+
         internal string ServerNameFromPing { get; set; }
 
+        /// <summary>
+        /// The address this client is connected to, or will connect to. Setting this
+        /// after the client is connected will not cause a reconnect.
+        /// </summary>
         public string ServerAddress
         {
             get
@@ -64,18 +81,58 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// The low level TCP stream for this client.
+        /// </summary>
         public Stream NetworkStream { get; set; }
+        /// <summary>
+        /// If true, SSL will be used to connect.
+        /// </summary>
         public bool UseSSL { get; private set; }
+        /// <summary>
+        /// If true, invalid SSL certificates are ignored.
+        /// </summary>
         public bool IgnoreInvalidSSL { get; set; }
+        /// <summary>
+        /// The character encoding to use for the connection. Defaults to UTF-8.
+        /// </summary>
+        /// <value>The encoding.</value>
         public Encoding Encoding { get; set; }
+        /// <summary>
+        /// The user this client is logged in as.
+        /// </summary>
+        /// <value>The user.</value>
         public IrcUser User { get; set; }
+        /// <summary>
+        /// The channels this user is joined to.
+        /// </summary>
         public ChannelCollection Channels { get; private set; }
+        /// <summary>
+        /// Settings that control the behavior of ChatSharp.
+        /// </summary>
         public ClientSettings Settings { get; set; }
-        public RequestManager RequestManager { get; set; }
+        /// <summary>
+        /// Information about the server we are connected to. Servers may not send us this information,
+        /// but it's required for ChatSharp to function, so by default this is a guess. Handle
+        /// IrcClient.ServerInfoRecieved if you'd like to know when it's populated with real information.
+        /// </summary>
         public ServerInfo ServerInfo { get; set; }
+        /// <summary>
+        /// A string to prepend to all PRIVMSGs sent. Many IRC bots prefix their messages with \u200B, to
+        /// indicate to other bots that you are a bot.
+        /// </summary>
         public string PrivmsgPrefix { get; set; }
+        /// <summary>
+        /// A list of users on this network that we are aware of.
+        /// </summary>
         public UserPool Users { get; set; }
 
+        /// <summary>
+        /// Creates a new IRC client, but will not connect until ConnectAsync is called.
+        /// </summary>
+        /// <param name="serverAddress">Server address including port in the form of "hostname:port".</param>
+        /// <param name="user">The IRC user to connect as.</param>
+        /// <param name="useSSL">Connect with SSL if true.</param>
         public IrcClient(string serverAddress, IrcUser user, bool useSSL = false)
         {
             if (serverAddress == null) throw new ArgumentNullException("serverAddress");
@@ -91,11 +148,15 @@ namespace ChatSharp
             RequestManager = new RequestManager();
             UseSSL = useSSL;
             WriteQueue = new ConcurrentQueue<string>();
+            ServerInfo = new ServerInfo();
             PrivmsgPrefix = "";
             Users = new UserPool();
             Users.Add(User); // Add self to user pool
         }
 
+        /// <summary>
+        /// Connects to the IRC server.
+        /// </summary>
         public void ConnectAsync()
         {
             if (Socket != null && Socket.Connected) throw new InvalidOperationException("Socket is already connected to server.");
@@ -122,11 +183,17 @@ namespace ChatSharp
             Socket.BeginConnect(ServerHostname, ServerPort, ConnectComplete, null);
         }
 
+        /// <summary>
+        /// Send a QUIT message and disconnect.
+        /// </summary>
         public void Quit()
         {
             Quit(null);
         }
 
+        /// <summary>
+        /// Send a QUIT message with a reason and disconnect.
+        /// </summary>
         public void Quit(string reason)
         {
             if (reason == null)
@@ -219,6 +286,9 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Send a raw IRC message. Behaves like /quote in most IRC clients.
+        /// </summary>
         public void SendRawMessage(string message, params object[] format)
         {
             if (NetworkStream == null)
@@ -241,6 +311,9 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Send a raw IRC message. Behaves like /quote in most IRC clients.
+        /// </summary>
         public void SendIrcMessage(IrcMessage message)
         {
             SendRawMessage(message.RawMessage);
@@ -283,108 +356,172 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Raised for socket errors. ChatSharp does not automatically reconnect.
+        /// </summary>
         public event EventHandler<SocketErrorEventArgs> NetworkError;
-        protected internal virtual void OnNetworkError(SocketErrorEventArgs e)
+        internal void OnNetworkError(SocketErrorEventArgs e)
         {
             if (NetworkError != null) NetworkError(this, e);
         }
+        /// <summary>
+        /// Occurs when a raw message is sent.
+        /// </summary>
         public event EventHandler<RawMessageEventArgs> RawMessageSent;
-        protected internal virtual void OnRawMessageSent(RawMessageEventArgs e)
+        internal void OnRawMessageSent(RawMessageEventArgs e)
         {
             if (RawMessageSent != null) RawMessageSent(this, e);
         }
+        /// <summary>
+        /// Occurs when a raw message recieved.
+        /// </summary>
         public event EventHandler<RawMessageEventArgs> RawMessageRecieved;
-        protected internal virtual void OnRawMessageRecieved(RawMessageEventArgs e)
+        internal void OnRawMessageRecieved(RawMessageEventArgs e)
         {
             if (RawMessageRecieved != null) RawMessageRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when a notice recieved.
+        /// </summary>
         public event EventHandler<IrcNoticeEventArgs> NoticeRecieved;
-        protected internal virtual void OnNoticeRecieved(IrcNoticeEventArgs e)
+        internal void OnNoticeRecieved(IrcNoticeEventArgs e)
         {
             if (NoticeRecieved != null) NoticeRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when the server has sent us part of the MOTD.
+        /// </summary>
         public event EventHandler<ServerMOTDEventArgs> MOTDPartRecieved;
-        protected internal virtual void OnMOTDPartRecieved(ServerMOTDEventArgs e)
+        internal void OnMOTDPartRecieved(ServerMOTDEventArgs e)
         {
             if (MOTDPartRecieved != null) MOTDPartRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when the entire server MOTD has been recieved.
+        /// </summary>
         public event EventHandler<ServerMOTDEventArgs> MOTDRecieved;
-        protected internal virtual void OnMOTDRecieved(ServerMOTDEventArgs e)
+        internal void OnMOTDRecieved(ServerMOTDEventArgs e)
         {
             if (MOTDRecieved != null) MOTDRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when a private message recieved. This can be a channel OR a user message.
+        /// </summary>
         public event EventHandler<PrivateMessageEventArgs> PrivateMessageRecieved;
-        protected internal virtual void OnPrivateMessageRecieved(PrivateMessageEventArgs e)
+        internal void OnPrivateMessageRecieved(PrivateMessageEventArgs e)
         {
             if (PrivateMessageRecieved != null) PrivateMessageRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when a message is recieved in an IRC channel.
+        /// </summary>
         public event EventHandler<PrivateMessageEventArgs> ChannelMessageRecieved;
-        protected internal virtual void OnChannelMessageRecieved(PrivateMessageEventArgs e)
+        internal void OnChannelMessageRecieved(PrivateMessageEventArgs e)
         {
             if (ChannelMessageRecieved != null) ChannelMessageRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when a message is recieved from a user.
+        /// </summary>
         public event EventHandler<PrivateMessageEventArgs> UserMessageRecieved;
-        protected internal virtual void OnUserMessageRecieved(PrivateMessageEventArgs e)
+        internal void OnUserMessageRecieved(PrivateMessageEventArgs e)
         {
             if (UserMessageRecieved != null) UserMessageRecieved(this, e);
         }
+        /// <summary>
+        /// Raised if the nick you've chosen is in use. By default, ChatSharp will pick a
+        /// random nick to use instead. Set ErronousNickEventArgs.DoNotHandle to prevent this.
+        /// </summary>
         public event EventHandler<ErronousNickEventArgs> NickInUse;
-        protected internal virtual void OnNickInUse(ErronousNickEventArgs e)
+        internal void OnNickInUse(ErronousNickEventArgs e)
         {
             if (NickInUse != null) NickInUse(this, e);
         }
+        /// <summary>
+        /// Occurs when a user or channel mode is changed.
+        /// </summary>
         public event EventHandler<ModeChangeEventArgs> ModeChanged;
-        protected internal virtual void OnModeChanged(ModeChangeEventArgs e)
+        internal void OnModeChanged(ModeChangeEventArgs e)
         {
             if (ModeChanged != null) ModeChanged(this, e);
         }
+        /// <summary>
+        /// Occurs when a user joins a channel.
+        /// </summary>
         public event EventHandler<ChannelUserEventArgs> UserJoinedChannel;
-        protected internal virtual void OnUserJoinedChannel(ChannelUserEventArgs e)
+        internal void OnUserJoinedChannel(ChannelUserEventArgs e)
         {
             if (UserJoinedChannel != null) UserJoinedChannel(this, e);
         }
+        /// <summary>
+        /// Occurs when a user parts a channel.
+        /// </summary>
         public event EventHandler<ChannelUserEventArgs> UserPartedChannel;
-        protected internal virtual void OnUserPartedChannel(ChannelUserEventArgs e)
+        internal void OnUserPartedChannel(ChannelUserEventArgs e)
         {
             if (UserPartedChannel != null) UserPartedChannel(this, e);
         }
+        /// <summary>
+        /// Occurs when we have received the list of users present in a channel.
+        /// </summary>
         public event EventHandler<ChannelEventArgs> ChannelListRecieved;
-        protected internal virtual void OnChannelListRecieved(ChannelEventArgs e)
+        internal void OnChannelListRecieved(ChannelEventArgs e)
         {
             if (ChannelListRecieved != null) ChannelListRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when we have received the topic of a channel.
+        /// </summary>
         public event EventHandler<ChannelTopicEventArgs> ChannelTopicReceived;
-        protected internal virtual void OnChannelTopicReceived(ChannelTopicEventArgs e)
+        internal void OnChannelTopicReceived(ChannelTopicEventArgs e)
         {
             if (ChannelTopicReceived != null) ChannelTopicReceived(this, e);
         }
+        /// <summary>
+        /// Occurs when the IRC connection is established and it is safe to begin interacting with the server.
+        /// </summary>
         public event EventHandler<EventArgs> ConnectionComplete;
-        protected internal virtual void OnConnectionComplete(EventArgs e)
+        internal void OnConnectionComplete(EventArgs e)
         {
             if (ConnectionComplete != null) ConnectionComplete(this, e);
         }
+        /// <summary>
+        /// Occurs when we receive server info (such as max nick length).
+        /// </summary>
         public event EventHandler<SupportsEventArgs> ServerInfoRecieved;
-        protected internal virtual void OnServerInfoRecieved(SupportsEventArgs e)
+        internal void OnServerInfoRecieved(SupportsEventArgs e)
         {
             if (ServerInfoRecieved != null) ServerInfoRecieved(this, e);
         }
+        /// <summary>
+        /// Occurs when a user is kicked.
+        /// </summary>
         public event EventHandler<KickEventArgs> UserKicked;
-        protected internal virtual void OnUserKicked(KickEventArgs e)
+        internal void OnUserKicked(KickEventArgs e)
         {
             if (UserKicked != null) UserKicked(this, e);
         }
+        /// <summary>
+        /// Occurs when a WHOIS response is received.
+        /// </summary>
         public event EventHandler<WhoIsReceivedEventArgs> WhoIsReceived;
-        protected internal virtual void OnWhoIsReceived(WhoIsReceivedEventArgs e)
+        internal void OnWhoIsReceived(WhoIsReceivedEventArgs e)
         {
             if (WhoIsReceived != null) WhoIsReceived(this, e);
         }
+        /// <summary>
+        /// Occurs when a user has changed their nick.
+        /// </summary>
         public event EventHandler<NickChangedEventArgs> NickChanged;
-        protected internal virtual void OnNickChanged(NickChangedEventArgs e)
+        internal void OnNickChanged(NickChangedEventArgs e)
         {
             if (NickChanged != null) NickChanged(this, e);
         }
+        /// <summary>
+        /// Occurs when a user has quit.
+        /// </summary>
         public event EventHandler<UserEventArgs> UserQuit;
-        protected internal virtual void OnUserQuit(UserEventArgs e)
+        internal void OnUserQuit(UserEventArgs e)
         {
             if (UserQuit != null) UserQuit(this, e);
         }

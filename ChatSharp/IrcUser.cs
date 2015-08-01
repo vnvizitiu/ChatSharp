@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace ChatSharp
 {
+    /// <summary>
+    /// A user connected to IRC.
+    /// </summary>
     public class IrcUser : IEquatable<IrcUser>
     {
         internal IrcUser()
@@ -12,6 +15,9 @@ namespace ChatSharp
             ChannelModes = new Dictionary<IrcChannel, char?>();
         }
 
+        /// <summary>
+        /// Constructs an IrcUser given a hostmask or nick.
+        /// </summary>
         public IrcUser(string host) : this()
         {
             if (!host.Contains("@") && !host.Contains("!"))
@@ -32,6 +38,9 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Constructs an IrcUser given a nick and user.
+        /// </summary>
         public IrcUser(string nick, string user) : this()
         {
             Nick = nick;
@@ -40,26 +49,60 @@ namespace ChatSharp
             Mode = string.Empty;
         }
 
+        /// <summary>
+        /// Constructs an IRC user given a nick, user, and password.
+        /// </summary>
         public IrcUser(string nick, string user, string password) : this(nick, user)
         {
             Password = password;
         }
 
+        /// <summary>
+        /// Constructs an IRC user given a nick, user, password, and real name.
+        /// </summary>
         public IrcUser(string nick, string user, string password, string realName) : this(nick, user, password)
         {
             RealName = realName;
         }
 
+        /// <summary>
+        /// The user's nick.
+        /// </summary>
         public string Nick { get; internal set; }
+        /// <summary>
+        /// The user's user (an IRC construct, a string that identifies your username).
+        /// </summary>
         public string User { get; internal set; }
+        /// <summary>
+        /// The user's password. Will not be set on anyone but your own user.
+        /// </summary>
         public string Password { get; internal set; }
+        /// <summary>
+        /// The user's mode.
+        /// </summary>
+        /// <value>The mode.</value>
         public string Mode { get; internal set; }
+        /// <summary>
+        /// The user's real name.
+        /// </summary>
+        /// <value>The name of the real.</value>
         public string RealName { get; internal set; }
+        /// <summary>
+        /// The user's hostname.
+        /// </summary>
         public string Hostname { get; internal set; }
+        /// <summary>
+        /// Channels this user is present in. Note that this only includes channels you are
+        /// also present in, even after a successful WHOIS.
+        /// </summary>
+        /// <value>The channels.</value>
         public ChannelCollection Channels { get; set; }
 
         internal Dictionary<IrcChannel, char?> ChannelModes { get; set; }
 
+        /// <summary>
+        /// This user's hostmask (nick!user@host).
+        /// </summary>
         public string Hostmask
         {
             get
@@ -68,6 +111,10 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Returns true if the user matches the given mask. Can be used to check if a ban applies
+        /// to this user, for example.
+        /// </summary>
         public bool Match(string mask)
         {
             if (mask.Contains("!") && mask.Contains("@"))
@@ -81,6 +128,9 @@ namespace ChatSharp
             return false;
         }
 
+        /// <summary>
+        /// Checks if the given hostmask matches the given mask.
+        /// </summary>
         public static bool Match(string mask, string value)
         {
             if (value == null)
@@ -110,11 +160,17 @@ namespace ChatSharp
             return i == mask.Length && j == value.Length;
         }
 
+        /// <summary>
+        /// True if this user is equal to another (compares hostmasks).
+        /// </summary>
         public bool Equals(IrcUser other)
         {
             return other.Hostmask == Hostmask;
         }
 
+        /// <summary>
+        /// True if this user is equal to another (compares hostmasks).
+        /// </summary>
         public override bool Equals(object obj)
         {
             if (obj is IrcUser)
@@ -122,11 +178,17 @@ namespace ChatSharp
             return false;
         }
 
+        /// <summary>
+        /// Returns the hash code of the user's hostmask.
+        /// </summary>
         public override int GetHashCode()
         {
             return Hostmask.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns the user's hostmask.
+        /// </summary>
         public override string ToString()
         {
             return Hostmask;

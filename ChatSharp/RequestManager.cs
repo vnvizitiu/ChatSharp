@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ChatSharp
 {
-    public class RequestManager
+    internal class RequestManager
     {
         public RequestManager()
         {
@@ -34,7 +34,7 @@ namespace ChatSharp
         }
     }
 
-    public class RequestOperation
+    internal class RequestOperation
     {
         public object State { get; set; }
         public Action<RequestOperation> Callback { get; set; }
