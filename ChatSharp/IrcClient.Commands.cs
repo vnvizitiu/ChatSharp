@@ -39,6 +39,18 @@ namespace ChatSharp
         }
 
         /// <summary>
+        /// Sends a NOTICE to one or more destinations (channels or users).
+        /// </summary>
+        public void SendNotice(string message, params string[] destinations)
+        {
+            const string illegalCharacters = "\r\n\0";
+            if (!destinations.Any()) throw new InvalidOperationException("Message must have at least one target.");
+            if (illegalCharacters.Any(message.Contains)) throw new ArgumentException("Illegal characters are present in mesasge.", "message");
+            string to = string.Join(",", destinations);
+            SendRawMessage("NOTICE {0} :{1}{2}", to, PrivmsgPrefix, message);
+        }
+
+        /// <summary>
         /// Leaves the specified channel.
         /// </summary>
         public void PartChannel(string channel)
