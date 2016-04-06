@@ -26,7 +26,7 @@ client.ChannelMessageRecieved += (s, e) =>
             return;
         }
         var target = e.PrivateMessage.Message.Substring(5);
-        client.WhoIs(target, whois => channel.Ban("*!*@" + whois.User.Hostname));
+        client.WhoIs(target, whois => channel.ChangeMode("+b *!*@" + whois.User.Hostname));
     }
 };
 
