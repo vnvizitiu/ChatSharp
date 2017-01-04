@@ -239,7 +239,7 @@ namespace ChatSharp
             }
             catch (Exception e)
             {
-                OnError(new Events.ErrorEventArgs(e.Message));
+                OnError(new Events.ErrorEventArgs(e));
             }
         }
 

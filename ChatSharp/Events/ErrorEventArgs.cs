@@ -11,9 +11,9 @@ namespace ChatSharp.Events
         /// <summary>
         /// The error that has occured.
         /// </summary>
-        public string Error { get; set; }
+        public Exception Error { get; set; }
 
-        internal ErrorEventArgs(string error)
+        internal ErrorEventArgs(Exception error)
         {
             Error = error;
         }
