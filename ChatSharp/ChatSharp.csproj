@@ -45,6 +45,7 @@
     <Compile Include="Events\ChannelTopicEventArgs.cs" />
     <Compile Include="Events\ChannelEventArgs.cs" />
     <Compile Include="Events\ChannelUserEventArgs.cs" />
+    <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\IrcNoticeEventArgs.cs" />
     <Compile Include="Events\ErronousNickEventArgs.cs" />
     <Compile Include="Events\ModeChangeEventArgs.cs" />

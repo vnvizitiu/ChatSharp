@@ -211,26 +211,36 @@ namespace ChatSharp
 
         private void ConnectComplete(IAsyncResult result)
         {
-            Socket.EndConnect(result);
-
-            NetworkStream = new NetworkStream(Socket);
-            if (UseSSL)
+            try
             {
-                if (IgnoreInvalidSSL)
-                    NetworkStream = new SslStream(NetworkStream, false, (sender, certificate, chain, policyErrors) => true);
-                else
-                    NetworkStream = new SslStream(NetworkStream);
-                ((SslStream)NetworkStream).AuthenticateAsClient(ServerHostname);
-            }
+                Socket.EndConnect(result);
+                NetworkStream = new NetworkStream(Socket);
+                if (UseSSL)
+                {
+                    if (IgnoreInvalidSSL)
+                        NetworkStream = new SslStream(NetworkStream, false, (sender, certificate, chain, policyErrors) => true);
+                    else
+                        NetworkStream = new SslStream(NetworkStream);
+                    ((SslStream)NetworkStream).AuthenticateAsClient(ServerHostname);
+                }
 
-            NetworkStream.BeginRead(ReadBuffer, ReadBufferIndex, ReadBuffer.Length, DataRecieved, null);
-            // Write login info
-            if (!string.IsNullOrEmpty(User.Password))
-                SendRawMessage("PASS {0}", User.Password);
-            SendRawMessage("NICK {0}", User.Nick);
-            // hostname, servername are ignored by most IRC servers
-            SendRawMessage("USER {0} hostname servername :{1}", User.User, User.RealName);
-            PingTimer.Start();
+                NetworkStream.BeginRead(ReadBuffer, ReadBufferIndex, ReadBuffer.Length, DataRecieved, null);
+                // Write login info
+                if (!string.IsNullOrEmpty(User.Password))
+                    SendRawMessage("PASS {0}", User.Password);
+                SendRawMessage("NICK {0}", User.Nick);
+                // hostname, servername are ignored by most IRC servers
+                SendRawMessage("USER {0} hostname servername :{1}", User.User, User.RealName);
+                PingTimer.Start();
+            }
+            catch (SocketException e)
+            {
+                OnNetworkError(new SocketErrorEventArgs(e.SocketErrorCode));
+            }
+            catch (Exception e)
+            {
+                OnError(new Events.ErrorEventArgs(e.Message));
+            }
         }
 
         private void DataRecieved(IAsyncResult result)
@@ -356,6 +366,14 @@ namespace ChatSharp
             }
         }
 
+        /// <summary>
+        /// Raised for errors.
+        /// </summary>
+        public event EventHandler<Events.ErrorEventArgs> Error;
+        internal void OnError(Events.ErrorEventArgs e)
+        {
+            if (Error != null) Error(this, e);
+        }
         /// <summary>
         /// Raised for socket errors. ChatSharp does not automatically reconnect.
         /// </summary>
