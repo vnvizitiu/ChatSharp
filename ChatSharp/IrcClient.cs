@@ -367,6 +367,13 @@ namespace ChatSharp
         }
 
         /// <summary>
+        /// </summary>
+        public event EventHandler<Events.ErrorReplieEventArgs> ErrorReplie;
+        internal void OnErrorReplie(Events.ErrorReplieEventArgs e)
+        {
+            if (ErrorReplie != null) ErrorReplie(this, e);
+        }
+        /// <summary>
         /// Raised for errors.
         /// </summary>
         public event EventHandler<Events.ErrorEventArgs> Error;
