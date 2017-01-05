@@ -367,6 +367,7 @@ namespace ChatSharp
         }
 
         /// <summary>
+        /// IRC Error Replies. rfc1459 6.1.
         /// </summary>
         public event EventHandler<Events.ErrorReplieEventArgs> ErrorReplie;
         internal void OnErrorReplie(Events.ErrorReplieEventArgs e)
