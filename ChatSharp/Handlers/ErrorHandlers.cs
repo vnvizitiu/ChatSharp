@@ -13,7 +13,7 @@ namespace ChatSharp.Handlers
         /// </summary>
         public static void HandleError(IrcClient client, IrcMessage message)
         {
-            client.OnErrorReplie(new Events.ErrorReplieEventArgs(message));
+            client.OnErrorReply(new Events.ErrorReplyEventArgs(message));
         }
     }
 }

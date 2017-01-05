@@ -369,10 +369,10 @@ namespace ChatSharp
         /// <summary>
         /// IRC Error Replies. rfc1459 6.1.
         /// </summary>
-        public event EventHandler<Events.ErrorReplieEventArgs> ErrorReplie;
-        internal void OnErrorReplie(Events.ErrorReplieEventArgs e)
+        public event EventHandler<Events.ErrorReplyEventArgs> ErrorReply;
+        internal void OnErrorReply(Events.ErrorReplyEventArgs e)
         {
-            if (ErrorReplie != null) ErrorReplie(this, e);
+            if (ErrorReply != null) ErrorReply(this, e);
         }
         /// <summary>
         /// Raised for errors.
